@@ -44,4 +44,4 @@ const itemSchema = new mongoose.Schema(
 
 // exported for use in seeder & frontend
 export const categories = CATEGORIES
-export default mongoose.model('Item', itemSchema)
+module.exports = mongoose.model('Item', itemSchema)
