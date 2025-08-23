@@ -34,10 +34,10 @@ const itemSchema = new mongoose.Schema(
     },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'User',
       required: true
     },
-    sold: { type: Boolean, default: false, index: true }
+    sold: { type: Boolean, default: false }
   },
   { timestamps: true }
 )
