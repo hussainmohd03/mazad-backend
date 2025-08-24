@@ -8,9 +8,18 @@ const createItem = async (req ,res) =>{
     } catch (error){
         throw(error)
     } 
+}
 
+const getItemDetails = async(req,res)=>{
+    try{
+        const itemDetails = await Item.findById(req.params.id)
+        res.json(itemDetails)
+    }catch(error){
+        throw(error)
+    }
 }
 
 module.exports = {
-    createItem
+    createItem,
+    getItemDetails
 }
