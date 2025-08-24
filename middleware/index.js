@@ -15,7 +15,7 @@ const comparePassword = async (password, storedPassword) => {
   return passwordMatch
 }
 
-const createToken = async (payload) => {
+const createToken = (payload) => {
   let token = jwt.sign(payload, APP_SECRET)
   return token
 }
