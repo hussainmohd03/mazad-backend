@@ -9,6 +9,7 @@ const app = express()
 
 // Database Configuration
 const mongoose = require('./config/db')
+mongoose()
 
 // set Port Configuration
 const port = process.env.PORT ? process.env.PORT : 3000
