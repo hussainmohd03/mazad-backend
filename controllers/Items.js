@@ -28,8 +28,18 @@ const deleteItem = async(req,res)=>{
     }
 }
 
+const getSellerItems = async(req,res)=>{
+    try{
+        const items = await Item.find({ownerId:req.body.ownerId})
+        res.json(items)
+    }catch(error){
+        throw(error)
+    }
+}
+
 module.exports = {
     createItem,
     getItemDetails,
-    deleteItem
+    deleteItem,
+    getSellerItems
 }
