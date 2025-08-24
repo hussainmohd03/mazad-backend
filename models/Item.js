@@ -43,5 +43,6 @@ const itemSchema = new mongoose.Schema(
 )
 
 // exported for use in seeder & frontend
-const Item = mongoose.model('Item', itemSchema)
-module.exports = { Item, CATEGORIES }
+// const Item = mongoose.model('Item', itemSchema)
+// module.exports = { Item, CATEGORIES }
+module.exports = mongoose.model('Item', itemSchema)
