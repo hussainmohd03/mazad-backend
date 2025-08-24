@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const CATEGORIES = [
   'heavy-machinery',
@@ -44,4 +45,4 @@ const itemSchema = new mongoose.Schema(
 
 // exported for use in seeder & frontend
 export const categories = CATEGORIES
-module.exports = mongoose.model('Item', itemSchema)
+export default mongoose.model('Item', itemSchema)
