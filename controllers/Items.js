@@ -19,7 +19,17 @@ const getItemDetails = async(req,res)=>{
     }
 }
 
+const deleteItem = async(req,res)=>{
+    try{
+        const item = await Item.findByIdAndDelete(req.params.id)
+        res.json("done")
+    } catch(error){
+        throw(error)
+    }
+}
+
 module.exports = {
     createItem,
-    getItemDetails
+    getItemDetails,
+    deleteItem
 }
