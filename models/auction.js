@@ -1,5 +1,4 @@
-// const mongoose = require('mongoose')
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const auctionSchema = new mongoose.Schema(
   {
@@ -31,4 +30,4 @@ const auctionSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-export default mongoose.model('Auction', auctionSchema)
+module.exports = mongoose.model('Auction', auctionSchema)
