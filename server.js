@@ -30,15 +30,17 @@ app.get('/', (req, res) => {
 
 // Require Routers
 const auctionRT = require('./routes/Auctions')
-const biddingsRT = require('./routes/Biddings')
 const itemsRT = require('./routes/items')
 const userRT = require('./routes/User')
+const AuthRT = require('./routes/Auth')
+const AdminRT = require('./routes/AdminPage')
 
 // use Routers
 app.use('/auctions', auctionRT)
-app.use('/biddigns', biddingsRT)
 app.use('/items', itemsRT)
-app.use('/auth', userRT)
+app.use('/users', userRT)
+app.use('/auth', AuthRT)
+app.use('/admin', AdminRT)
 
 // Listener
 app.listen(port, () => {
