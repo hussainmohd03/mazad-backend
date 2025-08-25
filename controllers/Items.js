@@ -44,10 +44,28 @@ const getSellerItems = async (req, res) => {
   }
 }
 
+const updateItem = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const item = await Item.findById(req.params.id)
+    console.log('item', item._id)
+    if (item.ownerId.toString() === id && item.status === 'pending') {
+      const updatedItem = await Item.findByIdAndUpdate(item._id, req.body, {
+        new: true
+      })
+      res.send({ msg: 'successful', item: updatedItem })
+    } else {
+      res.send('unauthorized')
+    }
+  } catch (error) {
+    throw error
+  }
+}
 
 module.exports = {
   createItem,
   getItemDetails,
   deleteItem,
-  getSellerItems
+  getSellerItems,
+  updateItem
 }
