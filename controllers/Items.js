@@ -20,7 +20,7 @@ const createItem = async (req, res) => {
 const getItemDetails = async (req, res) => {
   try {
     const itemDetails = await Item.findById(req.params.id)
-    res.json(itemDetails)
+    res.send(itemDetails)
   } catch (error) {
     throw error
   }
@@ -28,8 +28,12 @@ const getItemDetails = async (req, res) => {
 
 const deleteItem = async (req, res) => {
   try {
-    const item = await Item.findByIdAndDelete(req.params.id)
-    res.json('done')
+    const { id } = res.locals.payload
+    const item = await Item.findById(req.params.id)
+    if (item.ownerId.toString() === id) {
+      await Item.findOneAndDelete(req.params.id)
+      res.send({ msg: 'successful' })
+    }
   } catch (error) {
     throw error
   }
@@ -37,8 +41,9 @@ const deleteItem = async (req, res) => {
 
 const getSellerItems = async (req, res) => {
   try {
-    const items = await Item.find({ ownerId: req.body.ownerId })
-    res.json(items)
+    const { id } = res.locals.payload
+    const items = await Item.find({ ownerId: id })
+    res.send({ msg: 'successful', items: items })
   } catch (error) {
     throw error
   }
