@@ -15,7 +15,6 @@ exports.createAuction = async (req, res) => {
 
     //TODO 1: when item & user controllers are ready, check if item exists, is approved and user is the owner
     const item = await Item.findById(itemId)
-    console.log(item)
     if (item.ownerId != res.locals.payload.id) {
       return res.status(403).send({
         status: 'error',
