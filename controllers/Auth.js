@@ -1,6 +1,7 @@
 const User = require('../models/User')
 
 const middleware = require('../middleware/index')
+const { hashPassword, comparePassword, createToken } = require('../middleware')
 
 const Register = async (req, res) => {
   try {
@@ -57,11 +58,30 @@ const Login = async (req, res) => {
 }
 
 const loginAsAdmin = async (req, res) => {
+  console.log('entters')
   try {
+    console.log('here')
+    const { email, password } = req.body
+    console.log('hiii')
+    const admin = await User.findOne({ email, type: 'admin' })
+    console.log(admin)
+
+    if (!admin) {
+      console.log('reaches no admin')
+      return res.status(401).send({ status: 'error', msg: 'Admin not found' })
+    }
+    const matched = await comparePassword(password, admin.passwordHash)
+    if (!matched) {
+      return res
+        .status(401)
+        .send({ status: 'error', msg: 'Invalid credentials' })
+    }
+    const token = createToken({ id: admin._id, type: 'admin' })
+    res.status(200).send({ status: 'success', token })
   } catch {
     throw error
   }
-} // in progress
+} // done dut not tested
 
 const listAllUsers = async (req, res) => {
   try {
