@@ -3,12 +3,12 @@ const router = require('express').Router()
 
 const middleware = require('../middleware/index')
 
-router.post(
-  '',
+router.post('',
   middleware.stripToken,
   middleware.verifyToken,
   controller.createItem
 )
+
 router.get(
   '/:id',
   middleware.stripToken,
@@ -16,6 +16,7 @@ router.get(
   controller.getItemDetails
 )
 router.delete(
+
   '/:id',
   middleware.stripToken,
   middleware.verifyToken,
@@ -27,6 +28,7 @@ router.get(
   middleware.verifyToken,
   controller.getSellerItems
 )
+
 router.put(
   '/:id',
   middleware.stripToken,
