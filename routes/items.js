@@ -1,20 +1,17 @@
 const controller = require('../controllers/Items')
 const router = require('express').Router()
-const middleware = require('../middleware')
 
-router.post(
-  '/',
+const middleware = require('../middleware/index')
+
+router.post('',
   middleware.stripToken,
   middleware.verifyToken,
   controller.createItem
 )
-router.get(
-  '/:id',
-  middleware.stripToken,
-  middleware.verifyToken,
-  controller.getItemDetails
-)
-router.delete(
+
+router.get('/:id',   middleware.stripToken,
+  middleware.verifyToken, controller.getItemDetails)
+
   '/:id',
   middleware.stripToken,
   middleware.verifyToken,

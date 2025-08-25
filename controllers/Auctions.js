@@ -1,6 +1,7 @@
 const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
+const Item = require('../models/Item')
 
 const nowUTC = () => new Date()
 
@@ -12,22 +13,42 @@ exports.createAuction = async (req, res) => {
       return res.status(400).send({ status: 'error', msg: 'missing fields' })
     }
 
-    //TODO: when item & user controllers are ready, check if item exists, is approved and user is the owner
-
-    //TODO: check for duplicate auctions for the same itemId
+    //TODO 1: when item & user controllers are ready, check if item exists, is approved and user is the owner
+    const item = await Item.findById(itemId)
+    console.log(item)
+    if (item.ownerId != res.locals.payload.id) {
+      return res.status(403).send({
+        status: 'error',
+        msg: "unauthorized, you don't own this item"
+      })
+    }
+    if (item.status !== 'approved') {
+      return res.status(403).send({
+        status: 'error',
+        msg: 'item must be approved first'
+      })
+    }
+    //TODO 2: check for duplicate auctions for the same itemId
+    const isAuctioned = await Auction.findOne({ _id: itemId })
+    if (isAuctioned) {
+      return res.status(409).send({
+        status: 'error',
+        msg: 'Auction with this itemId already exists'
+      })
+    }
 
     const sd = new Date(startDate)
     const ed = new Date(endDate)
+    // TODO 3: check if endDate is in the past
     if (ed < nowUTC()) {
       return res
         .status(400)
         .send({ status: 'error', msg: 'endtDate must not be in the past' })
-      // TODO 3: check if startDate is in the past
+      // TODO 4: check if startDate is in the past
     } else if (sd < nowUTC()) {
       return res
         .status(400)
         .send({ status: 'error', msg: 'startDate must not be in the past' })
-      // TODO 4: check if endDate is in the past
     } else if (sd >= ed) {
       return res
         .status(400)
@@ -39,7 +60,7 @@ exports.createAuction = async (req, res) => {
 
     const auction = await Auction.create({
       itemId,
-      ownerId: '1', //TODO: replace with res.locals.payload.id
+      ownerId: res.locals.payload.id, //TODO 5: replace with res.locals.payload.id
       startDate: sd,
       endDate: ed,
       status,
@@ -51,4 +72,9 @@ exports.createAuction = async (req, res) => {
   } catch (error) {
     throw error
   }
+}
+
+exports.placeBidding = async (req, res) => {
+  try {
+  } catch (error) {}
 }
