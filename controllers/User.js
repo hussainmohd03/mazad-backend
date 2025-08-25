@@ -1,6 +1,6 @@
 const User = require('../models/User')
 
-const middleware = require('../middleware/index')
+const middleware = require('../middleware')
 
 const updatePassword = async (req, res) => {
   try {
@@ -39,6 +39,7 @@ const updatePassword = async (req, res) => {
       return res
         .status(200)
         .send({ status: 'password updated successfully', user: payload })
+
     }
     res.status(401).send({ status: 'error', msg: 'update password failed' })
   } catch (error) {}
@@ -85,9 +86,47 @@ const deleteMyProfile = async (req, res) => {
   } catch (error) {}
 }
 
+
+const addToWatchList = async(req,res)=>{
+    try{
+        const addedItem = await User.findByIdAndUpdate(
+            req.body.id,
+            {$push: {watchList: req.params.auctionId}},
+            {new:true}
+        )
+    }catch(error){
+        throw(error)
+    }
+}
+
+const removeFromWatchList = async(req,res)=>{
+    try{
+        const removedItem = await User.findByIdAndUpdate(
+            req.body.id,
+            {$pull: {watchList: req.params.auctionId}},
+            {new:true}
+        )
+    }catch(error){
+        throw(error)
+    }
+}
+
+const getWatchList = async(req,res)=>{
+    try{
+        const currentUser = await User.findById(req.body.id).populate('watchList')
+        res.json(currentUser.watchList)
+    }catch(error){
+        throw(error)
+    }
+}
+
 module.exports = {
   updatePassword,
   updateProfile,
   getMyProfileById,
-  deleteMyProfile
+  deleteMyProfile,
+  addToWatchList,
+  removeFromWatchList,
+  getWatchList
 }
+
