@@ -21,6 +21,7 @@ const getItemDetails = async(req,res)=>{
 
 const deleteItem = async(req,res)=>{
     try{
+        
         const item = await Item.findByIdAndDelete(req.params.id)
         res.json("done")
     } catch(error){
@@ -36,6 +37,7 @@ const getSellerItems = async(req,res)=>{
         throw(error)
     }
 }
+
 
 module.exports = {
     createItem,
