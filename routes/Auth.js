@@ -12,6 +12,7 @@ router.post(
   middleware.isAdmin,
   controller.loginAsAdmin
 )
+
 router.post(
   '/admin/users',
   middleware.stripToken,
@@ -19,6 +20,7 @@ router.post(
   middleware.isAdmin,
   controller.listAllUsers
 )
+
 router.post(
   '/admin/signup',
   middleware.stripToken,

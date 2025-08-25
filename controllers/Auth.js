@@ -85,8 +85,36 @@ const loginAsAdmin = async (req, res) => {
 
 const listAllUsers = async (req, res) => {
   try {
+    const { fullName, email, password, confirmPassword } = req.body
+    if (password !== confirmPassword) {
+      return res
+        .status(400)
+        .send({ status: 'error', msg: 'Passwords do not match' })
+    }
+
+    const [firstName, lastName] = fullName.split(' ')
+    const existing = await User.findOne({ email })
+    if (existing) {
+      return res
+        .status(400)
+        .send({ status: 'error', msg: 'Email already in use' })
+    }
+
+    const hashedPassword = await hashPassword(password)
+    const newAdmin = new User({
+      firstName,
+      lastName: lastName || '',
+      email,
+      passwordHash: hashedPassword,
+      type: 'admin'
+    })
+
+    await newAdmin.save()
+    res
+      .status(201)
+      .send({ status: 'success', msg: 'Admin created successfully' })
   } catch {
-    throw error
+    res.status(500).send({ status: 'error', msg: error.message })
   }
 } // in progress
 
