@@ -10,9 +10,9 @@ const hashPassword = async (password) => {
   return hashedPassword
 }
 
-const comparePassword = async (password, storedPassword) => {
-  let passwordMatch = await bcrypt.compare(password, storedPassword)
-  return passwordMatch
+const comparePassword = async (password, passwordDigest) => {
+  let matched = await bcrypt.compare(password, passwordDigest)
+  return matched
 }
 
 const createToken = (payload) => {
@@ -53,11 +53,27 @@ const checkSession = async (req, res) => {
   res.status(200).send(payload)
 }
 
+const isAdmin = async (req, res, next) => {
+  const { payload } = res.locals
+  try {
+    if (payload.type === 'admin') {
+      return next()
+    } else {
+      res
+        .status(401)
+        .send({ status: 'error', msg: 'not an admin, unauthorized access' })
+    }
+  } catch (error) {
+    res.status(401).send({ status: 'error', msg: 'authorization error' })
+  }
+}
+
 module.exports = {
   hashPassword,
   comparePassword,
   createToken,
   stripToken,
   verifyToken,
-  checkSession
+  checkSession,
+  isAdmin
 }

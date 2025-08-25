@@ -50,7 +50,9 @@ const Login = async (req, res) => {
     } else {
       return res.status(400).send('no user exists with that email.')
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error
+  }
 }
 
 module.exports = {

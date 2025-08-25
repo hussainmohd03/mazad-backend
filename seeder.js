@@ -9,8 +9,8 @@ import Auction from './models/Auction.js'
 import Bid from './models/Bidding.js'
 import Transaction from './models/Transaction.js'
 
-const MONGO_URI =
-  'mongodb+srv://mad6717:M123123123m@student-cluster.628xz0y.mongodb.net/mazad' // change db name
+let MONGO_URI =
+  'mongodb+srv://maryamaliredha:iKoNJP9UFsPtdko3@maryam-cluster.ijdktda.mongodb.net/mazad'
 
 async function seed() {
   try {
