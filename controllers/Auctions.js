@@ -9,8 +9,14 @@ exports.createAuction = async (req, res) => {
     if (!itemId || !startDate || !endDate || !initialPrice) {
       return res.status(400).send({ status: 'error', msg: 'missing fields' })
     }
+
+    //TODO: when item logic is ready, check if item exists, is approved and user is the owner
+
+    //TODO: check for duplicate auctions for the same itemId
+
     const sd = new Date(startDate)
     const ed = new Date(endDate)
+    // TODO: check if endDate is in the past
     if (sd >= ed)
       return res
         .status(400)
@@ -26,7 +32,8 @@ exports.createAuction = async (req, res) => {
       endDate: ed,
       status,
       initialPrice,
-      currentPrice: initialPrice
+      currentPrice: initialPrice,
+      winningBid: null
     })
     return res.status(201).send(auction)
   } catch (error) {
