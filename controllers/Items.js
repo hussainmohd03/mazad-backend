@@ -4,14 +4,9 @@ const middleware = require('../middleware')
 
 const createItem = async (req, res) => {
   try {
-    const { id } = res.locals.payload
-    const user = await User.findById(id)
-    if (user.verified) {
-      const item = await Item.create(req.body)
-      res.status(200).send({ msg: 'item created successfully', item: item })
-    } else {
-      return res.status(200).send('user not verified')
-    }
+    req.body.ownerId = res.locals.payload.id
+    const createdItem = await Item.create(req.body)
+    res.send(createdItem)
   } catch (error) {
     throw error
   }

@@ -1,6 +1,12 @@
 const controller = require('../controllers/Auctions')
 const router = require('express').Router()
+const middleware = require('../middleware')
 
-router.post('', controller.createAuction)
+router.post(
+  '',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.createAuction
+)
 
 module.exports = router
