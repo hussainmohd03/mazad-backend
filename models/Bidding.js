@@ -1,5 +1,4 @@
-// const mongoose = require('mongoose')
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const bidSchema = new mongoose.Schema(
   {
@@ -18,4 +17,4 @@ const bidSchema = new mongoose.Schema(
   { timestamps: { createdAt: true, updatedAt: false } }
 )
 
-export default mongoose.model('Bidding', bidSchema)
+module.exports = mongoose.model('Bidding', bidSchema)

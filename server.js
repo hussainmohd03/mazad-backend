@@ -9,6 +9,7 @@ const app = express()
 
 // db config
 const mongoose = require('./config/db')
+mongoose()
 
 // set port config
 const port = process.env.PORT ? process.env.PORT : 3000
@@ -18,10 +19,10 @@ const morgan = require('morgan')
 
 // use middlewares
 app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(cors())
 app.use(morgan('dev'))
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(cors())
-app.use(express.json())
 
 // root route
 app.get('/', (req, res) => {
