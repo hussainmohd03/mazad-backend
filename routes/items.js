@@ -18,4 +18,5 @@ router.get("/",
     middleware.stripToken,
     middleware.verifyToken,
     controller.getSellerItems)
+
 module.exports = router

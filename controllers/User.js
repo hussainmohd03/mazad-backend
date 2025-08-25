@@ -1,10 +1,15 @@
 const User = require('../models/User')
 const middleware = require('../middleware')
 
-//not done (gone cleep)
+
 const addToWatchList = async(req,res)=>{
     try{
-        const addedItem = await User.findByIdAndUpdate(req.body.id)
+        console.log("reached")
+        const addedItem = await User.findByIdAndUpdate(
+            req.body.id,
+            {$push: {watchList: req.params.auctionId}},
+            {new:true}
+        )
     }catch(error){
         throw(error)
     }
