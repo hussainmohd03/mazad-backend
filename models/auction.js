@@ -3,15 +3,13 @@ const mongoose = require('mongoose')
 const auctionSchema = new mongoose.Schema(
   {
     itemId: {
-      // type: mongoose.Schema.Types.ObjectId,
-      // ref: 'Item',
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Item',
       required: true
     },
     ownerId: {
-      // type: mongoose.Schema.Types.ObjectId,
-      // ref: 'User',
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true
     },
     startDate: { type: Date, required: true},
