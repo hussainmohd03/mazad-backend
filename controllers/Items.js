@@ -7,10 +7,10 @@ const createItem = async (req, res) => {
     const { id } = res.locals.payload
     const user = await User.findById(id)
     if (user.verified) {
-      return res.send('user is verified')
-    } else {
       const item = await Item.create(req.body)
       res.status(200).send({ msg: 'item created successfully', item: item })
+    } else {
+      return res.status(200).send('user not verified')
     }
   } catch (error) {
     throw error
