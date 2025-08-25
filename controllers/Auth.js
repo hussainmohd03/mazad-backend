@@ -2,7 +2,6 @@ const User = require('../models/User')
 
 const middleware = require('../middleware/index')
 
-
 const Register = async (req, res) => {
   try {
     const { email, password, full_name } = req.body

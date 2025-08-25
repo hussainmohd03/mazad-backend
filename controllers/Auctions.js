@@ -73,3 +73,8 @@ exports.createAuction = async (req, res) => {
     throw error
   }
 }
+
+exports.placeBidding = async (req, res) => {
+  try {
+  } catch (error) {}
+}
