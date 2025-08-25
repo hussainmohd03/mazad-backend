@@ -44,6 +44,7 @@ const getSellerItems = async (req, res) => {
   }
 }
 
+
 module.exports = {
   createItem,
   getItemDetails,
