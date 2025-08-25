@@ -26,7 +26,17 @@ const removeFromWatchList = async(req,res)=>{
     }
 }
 
+const getWatchList = async(req,res)=>{
+    try{
+        const currentUser = await User.findById(req.body.id).populate('watchList')
+        res.json(currentUser.watchList)
+    }catch(error){
+        throw(error)
+    }
+}
+
 module.exports = {
     addToWatchList,
-    removeFromWatchList
+    removeFromWatchList,
+    getWatchList
 }

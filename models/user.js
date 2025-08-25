@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Auction = require('./auction')
 
 const userSchema = new mongoose.Schema(
   {
