@@ -21,7 +21,7 @@ exports.createAuction = async (req, res) => {
 
     const auction = await Auction.create({
       itemId,
-      ownerId: 1, // replace with res.locals.payload.id
+      ownerId: '1', // replace with res.locals.payload.id
       startDate: sd,
       endDate: ed,
       status,
