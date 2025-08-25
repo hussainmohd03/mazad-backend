@@ -1,4 +1,5 @@
 const Item = require('../models/Item')
+const User = require('../models/User')
 
 const approveItem = async (req, res) => {
   try {
@@ -52,9 +53,35 @@ const ListAllItems = async (req, res) => {
   }
 }
 
+const getAllAdmins = async (req, res) => {
+  try {
+    const admins = await User.find({ type: 'admin' })
+    res.send({ msg: 'got all admins', admins: admins })
+  } catch (error) {}
+}
+
+const deleteAdmin = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id)
+    res.send({ msg: 'account deleted ' })
+  } catch (error) {}
+}
+
+const updateAdminProfile = async (req, res) => {
+  try {
+    const { id } = req.params
+    const admin = await User.findByIdAndUpdate(id, req.body, {
+      new: true
+    })
+    res.send({ msg: 'account edited', admin: admin })
+  } catch (error) {}
+}
 module.exports = {
   approveItem,
   rejectItem,
   pendingItem,
-  ListAllItems
+  ListAllItems,
+  getAllAdmins,
+  deleteAdmin,
+  updateAdminProfile
 }

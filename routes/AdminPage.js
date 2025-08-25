@@ -31,4 +31,27 @@ router.get(
   controller.ListAllItems
 )
 
+router.get(
+  '',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
+  controller.getAllAdmins
+)
+
+router.delete(
+  '/:id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
+  controller.deleteAdmin
+)
+
+router.put(
+  '/:id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
+  controller.updateAdminProfile
+)
 module.exports = router
