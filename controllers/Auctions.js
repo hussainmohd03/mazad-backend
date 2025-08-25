@@ -12,22 +12,22 @@ exports.createAuction = async (req, res) => {
       return res.status(400).send({ status: 'error', msg: 'missing fields' })
     }
 
-    //TODO: when item & user controllers are ready, check if item exists, is approved and user is the owner
+    //TODO 1: when item & user controllers are ready, check if item exists, is approved and user is the owner
 
-    //TODO: check for duplicate auctions for the same itemId
+    //TODO 2: check for duplicate auctions for the same itemId
 
     const sd = new Date(startDate)
     const ed = new Date(endDate)
+    // TODO 3: check if endDate is in the past
     if (ed < nowUTC()) {
       return res
         .status(400)
         .send({ status: 'error', msg: 'endtDate must not be in the past' })
-      // TODO 3: check if startDate is in the past
+      // TODO 4: check if startDate is in the past
     } else if (sd < nowUTC()) {
       return res
         .status(400)
         .send({ status: 'error', msg: 'startDate must not be in the past' })
-      // TODO 4: check if endDate is in the past
     } else if (sd >= ed) {
       return res
         .status(400)
@@ -39,7 +39,7 @@ exports.createAuction = async (req, res) => {
 
     const auction = await Auction.create({
       itemId,
-      ownerId: '1', //TODO: replace with res.locals.payload.id
+      ownerId: '1', //TODO 5: replace with res.locals.payload.id
       startDate: sd,
       endDate: ed,
       status,
