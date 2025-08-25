@@ -10,4 +10,8 @@ const connectDB = async () => {
   }
 }
 
-module.exports = connectDB
+mongoose.connection.on('connected', () => {
+  console.log(`connected to database: ${mongoose.connection.name}`)
+})
+
+module.exports = mongoose
