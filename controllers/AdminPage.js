@@ -1,8 +1,8 @@
-const Items = require('../models/Item')
+const Item = require('../models/Item')
 
 const approveItem = async (req, res) => {
   try {
-    const aprovedItems = await Items.findByIdAndUpdate(
+    const aprovedItems = await Item.findByIdAndUpdate(
       req.params.id,
       { status: 'approved' },
       { new: true }
@@ -15,7 +15,7 @@ const approveItem = async (req, res) => {
 
 const rejectItem = async (req, res) => {
   try {
-    const rejectedItem = await Items.findByIdAndUpdate(
+    const rejectedItem = await Item.findByIdAndUpdate(
       req.params.id,
       { status: 'rejected' },
       { new: true }
@@ -28,7 +28,7 @@ const rejectItem = async (req, res) => {
 
 const pendingItem = async (req, res) => {
   try {
-    const pendingItem = await Items.findByIdAndUpdate(
+    const pendingItem = await Item.findByIdAndUpdate(
       req.params.id,
       { status: 'pending' },
       { new: true }
@@ -39,18 +39,22 @@ const pendingItem = async (req, res) => {
   }
 } // tested
 
-const getingAllItems = async (req, res) => {
+const ListAllItems = async (req, res) => {
   try {
-    const AllItems = await Items.find()
-    res.status(200).send(AllItems)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
+    const items = await Item.find({})
+    if (items) {
+      res.send({ msg: 'success all items fetched', item: items })
+    } else {
+      res.send({ msg: 'no items found' })
+    }
+  } catch {
+    throw error
   }
-} // tested
+}
 
 module.exports = {
   approveItem,
   rejectItem,
   pendingItem,
-  getingAllItems
+  ListAllItems
 }

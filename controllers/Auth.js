@@ -1,9 +1,8 @@
 const User = require('../models/User')
-
+const Item = require('../models/Item')
 const middleware = require('../middleware/index')
 
 const { hashPassword, comparePassword, createToken } = require('../middleware')
-
 
 const Register = async (req, res) => {
   try {
@@ -59,17 +58,13 @@ const Login = async (req, res) => {
   }
 }
 
-const loginAsAdmin = async (req, res) => {
-  console.log('entters')
+// tested and works
+const LoginAsAdmin = async (req, res) => {
   try {
-    console.log('here')
     const { email, password } = req.body
-    console.log('hiii')
     const admin = await User.findOne({ email, type: 'admin' })
-    console.log(admin)
 
     if (!admin) {
-      console.log('reaches no admin')
       return res.status(401).send({ status: 'error', msg: 'Admin not found' })
     }
     const matched = await comparePassword(password, admin.passwordHash)
@@ -83,26 +78,22 @@ const loginAsAdmin = async (req, res) => {
   } catch {
     throw error
   }
-} // done dut not tested
+}
 
-const listAllUsers = async (req, res) => {
+const AddAdminAccount = async (req, res) => {
   try {
-    const { fullName, email, password, confirmPassword } = req.body
-    if (password !== confirmPassword) {
-      return res
-        .status(400)
-        .send({ status: 'error', msg: 'Passwords do not match' })
-    }
+    const { full_name, email, password } = req.body
 
-    const [firstName, lastName] = fullName.split(' ')
+    const [firstName, lastName] = full_name.split(' ')
     const existing = await User.findOne({ email })
     if (existing) {
       return res
         .status(400)
-        .send({ status: 'error', msg: 'Email already in use' })
+        .send({ status: 'error', msg: 'email already in use' })
     }
 
     const hashedPassword = await hashPassword(password)
+
     const newAdmin = new User({
       firstName,
       lastName: lastName || '',
@@ -112,25 +103,20 @@ const listAllUsers = async (req, res) => {
     })
 
     await newAdmin.save()
-    res
-      .status(201)
-      .send({ status: 'success', msg: 'Admin created successfully' })
+    res.status(201).send({
+      status: 'success',
+      msg: 'admin created successfully',
+      user: newAdmin
+    })
   } catch {
     res.status(500).send({ status: 'error', msg: error.message })
   }
-} // in progress
+}
 
-const addAdminAccount = async (req, res) => {
-  try {
-  } catch {
-    throw error
-  }
-} // in progress
 
 module.exports = {
   Register,
   Login,
-  loginAsAdmin,
-  listAllUsers,
-  addAdminAccount
+  LoginAsAdmin,
+  AddAdminAccount
 }
