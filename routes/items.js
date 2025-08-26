@@ -1,6 +1,5 @@
 const controller = require('../controllers/Items')
 const router = require('express').Router()
-
 const middleware = require('../middleware/index')
 
 router.post(
@@ -16,17 +15,26 @@ router.get(
   middleware.verifyToken,
   controller.getItemDetails
 )
+
 router.delete(
   '/:id',
   middleware.stripToken,
   middleware.verifyToken,
   controller.deleteItem
 )
+
 router.get(
   '/',
   middleware.stripToken,
   middleware.verifyToken,
   controller.getSellerItems
+)
+
+router.put(
+  '/:id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.updateItem
 )
 
 module.exports = router

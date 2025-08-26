@@ -1,9 +1,8 @@
 const User = require('../models/User')
-
+const Item = require('../models/Item')
 const middleware = require('../middleware/index')
 
 const { hashPassword, comparePassword, createToken } = require('../middleware')
-
 
 const Register = async (req, res) => {
   try {
@@ -13,7 +12,9 @@ const Register = async (req, res) => {
     const lastName = full_name.substring(space_index, full_name.length)
 
     let passwordHash = await middleware.hashPassword(password)
+    console.log('before')
     let existingUserInDB = await User.findOne({ email })
+    console.log(existingUserInDB)
 
     if (existingUserInDB) {
       return res.status(400).send('a user with this email exists. try another.')
@@ -59,7 +60,8 @@ const Login = async (req, res) => {
   }
 }
 
-const loginAsAdmin = async (req, res) => {
+// tested and works
+const LoginAsAdmin = async (req, res) => {
   try {
     const { email, password } = req.body
     const admin = await User.findOne({ email, type: 'admin' })
@@ -78,35 +80,21 @@ const loginAsAdmin = async (req, res) => {
   } catch {
     throw error
   }
-} // done dut not tested
+}
 
-const listAllUsers = async (req, res) => {
+const AddAdminAccount = async (req, res) => {
   try {
-    const users = await User.find().select('-passwordHash')
-    res.status(200).send({ status: 'success', users })
-  } catch {
-    res.status(500).send({ status: 'error', msg: error.message })
-  }
-} // done dut not tested
-
-const addAdminAccount = async (req, res) => {
-  try {
-    const { fullName, email, password, confirmPassword } = req.body
-    if (password !== confirmPassword) {
-      return res
-        .status(400)
-        .send({ status: 'error', msg: 'Passwords do not match' })
-    }
-
-    const [firstName, lastName] = fullName.split(' ')
+    const { full_name, email, password } = req.body
+    const [firstName, lastName] = full_name.split(' ')
     const existing = await User.findOne({ email })
     if (existing) {
       return res
         .status(400)
-        .send({ status: 'error', msg: 'Email already in use' })
+        .send({ status: 'error', msg: 'email already in use' })
     }
 
     const hashedPassword = await hashPassword(password)
+
     const newAdmin = new User({
       firstName,
       lastName: lastName || '',
@@ -116,18 +104,19 @@ const addAdminAccount = async (req, res) => {
     })
 
     await newAdmin.save()
-    res
-      .status(201)
-      .send({ status: 'success', msg: 'Admin created successfully' })
+    res.status(201).send({
+      status: 'success',
+      msg: 'admin created successfully',
+      user: newAdmin
+    })
   } catch {
-    throw error
+    res.status(500).send({ status: 'error', msg: error.message })
   }
-} // done dut not tested
+}
 
 module.exports = {
   Register,
   Login,
-  loginAsAdmin,
-  listAllUsers,
-  addAdminAccount
+  LoginAsAdmin,
+  AddAdminAccount
 }

@@ -2,6 +2,7 @@ const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const Item = require('../models/Item')
+const { io } = require('../server')
 
 const nowUTC = () => new Date()
 
@@ -15,7 +16,6 @@ exports.createAuction = async (req, res) => {
 
     //TODO 1: when item & user controllers are ready, check if item exists, is approved and user is the owner
     const item = await Item.findById(itemId)
-    console.log(item)
     if (item.ownerId != res.locals.payload.id) {
       return res.status(403).send({
         status: 'error',
@@ -68,7 +68,54 @@ exports.createAuction = async (req, res) => {
       currentPrice: initialPrice,
       winningBid: null
     })
+
+    // TODO 6: emit event if auction is created as ongoing
+
     return res.status(201).send(auction)
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.getAuction = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const auction = await Auction.findById(id).populate('itemId')
+
+    if (!auction)
+      res.status(404).send({ status: 'error', msg: 'auction not found' })
+
+    const bidCount = (await Bidding.find({ auctionId: id })).length
+
+    // TODO 1: If status='upcoming' and startDate == now, auto-promote to ongoing
+    if (auction.status === 'upcoming' && auction.startDate <= nowUTC()) {
+      auction.status = 'ongoing'
+      io.to(auction._id.toString()).emit('auctionStatusChanged', {
+        auctionId: auction._id,
+        status: 'ongoing'
+      })
+    }
+
+    const response = { auction: auction, bidCount: bidCount }
+
+    res.status(200).send(response)
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.listAuctions = async (req, res) => {
+  try {
+    const { status } = req.query
+    const q = {}
+    if (status) q.status = status
+
+    const auctions = await Auction.find(q)
+      .sort({ createdAt: -1 })
+      .populate('itemId')
+
+    return res.status(200).send(auctions)
   } catch (error) {
     throw error
   }
@@ -76,5 +123,62 @@ exports.createAuction = async (req, res) => {
 
 exports.placeBidding = async (req, res) => {
   try {
-  } catch (error) {}
+    const { id } = res.locals.payload
+    const auctionId = req.params.id
+    const { amount } = req.body
+    const step = 20
+    if (!amount) {
+      return res.send('invalid amount')
+    } else {
+      const auction = await Auction.findById(auctionId)
+      if (!auction) {
+        return res.status(400).send('not found')
+      } else {
+        if (auction.status === 'ongoing') {
+          const sd = new Date(auction.startDate)
+          const ed = new Date(auction.endDate)
+          if (sd <= nowUTC() < ed) {
+            if (amount > auction.currentPrice + step) {
+              const newBid = await Bidding.create({
+                auctionId: auctionId,
+                userId: id,
+                amount: amount
+              })
+              const updatedAuction = await Auction.findByIdAndUpdate(
+                auctionId,
+                {
+                  currentPrice: amount
+                },
+                { new: true }
+              )
+              // TODO 1: emit new bid
+              io.to(auctionId).emit('newBid', {
+                auctionId,
+                bid: newBid,
+                currentPrice: updatedAuction.currentPrice
+              })
+
+              // TODO 2: check if auction should be closed, if yes change state and emit change
+              if (auction.status === 'ongoing' && auction.endDate <= nowUTC()) {
+                auction.status = 'closed'
+                io.to(auction._id.toString()).emit('auctionStatusChanged', {
+                  auctionId: auction._id,
+                  status: 'closed'
+                })
+              }
+
+              return res.status(201).send({
+                msg: 'new bid created',
+                newBid: newBid,
+                updatedAuction: updatedAuction
+              })
+            }
+            return res.status(404).send({ msg: 'amount invalid' })
+          }
+        }
+      }
+    }
+  } catch (error) {
+    throw error
+  }
 }
