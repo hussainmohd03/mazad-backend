@@ -76,5 +76,47 @@ exports.createAuction = async (req, res) => {
 
 exports.placeBidding = async (req, res) => {
   try {
+    const { id } = res.locals.payload
+    const auctionId = req.params.id
+    const { amount } = req.body
+    const step = 20
+    if (!amount) {
+      return res.send('invalid amount')
+    } else {
+      const auction = await Auction.findById(auctionId)
+      if (!auction) {
+        return res.status(400).send('not found')
+      } else {
+        if (auction.status === 'ongoing') {
+          const sd = new Date(auction.startDate)
+          const ed = new Date(auction.endDate)
+          if (sd <= nowUTC() < ed) {
+            if (amount > auction.currentPrice + step) {
+              const newBid = await Bidding.create({
+                auctionId: auctionId,
+                userId: id,
+                amount: amount
+              })
+              const updatedAuction = await Auction.findByIdAndUpdate(
+                auctionId,
+                {
+                  currentPrice: amount
+                },
+                { new: true }
+              )
+              return res
+                .status(201)
+                .send({
+                  msg: 'new bid created',
+                  newBid: newBid,
+                  updatedAuction: updatedAuction
+                })
+            }
+            return res.status(404).send({ msg: 'amount invalid' })
+          }
+        }
+      }
+    }
   } catch (error) {}
 }
+

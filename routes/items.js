@@ -9,8 +9,13 @@ router.post('',
   controller.createItem
 )
 
-router.get('/:id',   middleware.stripToken,
-  middleware.verifyToken, controller.getItemDetails)
+router.get(
+  '/:id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getItemDetails
+)
+router.delete(
 
   '/:id',
   middleware.stripToken,
@@ -22,6 +27,13 @@ router.get(
   middleware.stripToken,
   middleware.verifyToken,
   controller.getSellerItems
+)
+
+router.put(
+  '/:id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.updateItem
 )
 
 module.exports = router
