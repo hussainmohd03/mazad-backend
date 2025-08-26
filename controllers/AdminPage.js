@@ -1,44 +1,34 @@
 const Item = require('../models/Item')
 const User = require('../models/User')
 
-const approveItem = async (req, res) => {
+const updateItemStatus = async (req, res) => {
   try {
-    const aprovedItems = await Item.findByIdAndUpdate(
-      req.params.id,
-      { status: 'approved' },
-      { new: true }
-    )
-    res.status(200).send(aprovedItems)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-} // tested
-
-const rejectItem = async (req, res) => {
-  try {
-    const rejectedItem = await Item.findByIdAndUpdate(
-      req.params.id,
-      { status: 'rejected' },
-      { new: true }
-    )
-    res.status(200).send(rejectedItem)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-} // tested
-
-const pendingItem = async (req, res) => {
-  try {
-    const pendingItem = await Item.findByIdAndUpdate(
-      req.params.id,
-      { status: 'pending' },
-      { new: true }
-    )
-    res.status(200).send(pendingItem)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-} // tested
+    if (req.query.action === 'approved') {
+      const aprovedItems = await Item.findByIdAndUpdate(
+        req.params.id,
+        { status: 'approved' },
+        { new: true }
+      )
+      res.status(200).send(aprovedItems)
+    } else if (req.query.action === 'rejected') {
+      const rejectedItem = await Item.findByIdAndUpdate(
+        req.params.id,
+        { status: 'rejected' },
+        { new: true }
+      )
+      res.status(200).send(rejectedItem)
+    } else if (req.query.action === 'pending') {
+      const pendingItem = await Item.findByIdAndUpdate(
+        req.params.id,
+        { status: 'pending' },
+        { new: true }
+      )
+      res.status(200).send(pendingItem)
+    } else {
+      res.send('no query param')
+    }
+  } catch (error) {}
+}
 
 const ListAllItems = async (req, res) => {
   try {
@@ -77,9 +67,7 @@ const updateAdminProfile = async (req, res) => {
   } catch (error) {}
 }
 module.exports = {
-  approveItem,
-  rejectItem,
-  pendingItem,
+  updateItemStatus,
   ListAllItems,
   getAllAdmins,
   deleteAdmin,
