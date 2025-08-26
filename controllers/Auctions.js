@@ -153,6 +153,11 @@ exports.placeBidding = async (req, res) => {
               )
 
               // TODO 1: emit new bid
+              io.to(auctionId).emit('newBid', {
+                auctionId,
+                bid: newBid,
+                currentPrice: updatedAuction.currentPrice
+              })
 
               // TODO 2: check if auction should be closed, if yes change state and emit change
               if (auction.status === 'ongoing' && auction.endDate == nowUTC()) {
