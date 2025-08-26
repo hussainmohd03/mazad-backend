@@ -10,4 +10,10 @@ router.post(
 )
 router.get('/:id', controller.getAuction)
 
+router.post(
+  '/:id/bids',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.placeBidding
+)
 module.exports = router

@@ -30,4 +30,11 @@ router.get(
   controller.getSellerItems
 )
 
+router.put(
+  '/:id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.updateItem
+)
+
 module.exports = router

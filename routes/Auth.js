@@ -10,15 +10,7 @@ router.post(
   middleware.stripToken,
   middleware.verifyToken,
   middleware.isAdmin,
-  controller.loginAsAdmin
-)
-
-router.post(
-  '/admin/users',
-  middleware.stripToken,
-  middleware.verifyToken,
-  middleware.isAdmin,
-  controller.listAllUsers
+  controller.LoginAsAdmin
 )
 
 router.post(
@@ -26,6 +18,6 @@ router.post(
   middleware.stripToken,
   middleware.verifyToken,
   middleware.isAdmin,
-  controller.addAdminAccount
+  controller.AddAdminAccount
 )
 module.exports = router
