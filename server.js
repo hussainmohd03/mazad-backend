@@ -32,11 +32,10 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.id} left auction ${auctionId}`)
   })
 
-    // new bid event
+  // new bid event
   socket.on('newBid', (data) => {
     const { auctionId, userId, amount } = data
     console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
-
   })
 
   // auction status changed event
@@ -49,7 +48,6 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id)
   })
 })
-
 
 // db config
 const mongoose = require('./config/db')
@@ -86,13 +84,14 @@ app.use('/users', userRT)
 app.use('/auth', AuthRT)
 app.use('/admin', AdminRT)
 
-
 // TODO 1: Cron Job to check Auctions' status
 
 // listener
-io.listen(port, () => {
+io.listen(5000, () => {
+  console.log('websocket')
+})
+app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
 
 module.exports = { io, server }
-
