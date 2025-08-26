@@ -12,7 +12,6 @@ router.post(
   middleware.isAdmin,
   controller.loginAsAdmin
 )
-
 router.post(
   '/admin/users',
   middleware.stripToken,

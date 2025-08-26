@@ -58,16 +58,11 @@ const Login = async (req, res) => {
 }
 
 const loginAsAdmin = async (req, res) => {
-  console.log('entters')
   try {
-    console.log('here')
     const { email, password } = req.body
-    console.log('hiii')
     const admin = await User.findOne({ email, type: 'admin' })
-    console.log(admin)
 
     if (!admin) {
-      console.log('reaches no admin')
       return res.status(401).send({ status: 'error', msg: 'Admin not found' })
     }
     const matched = await comparePassword(password, admin.passwordHash)
@@ -84,6 +79,15 @@ const loginAsAdmin = async (req, res) => {
 } // done dut not tested
 
 const listAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-passwordHash')
+    res.status(200).send({ status: 'success', users })
+  } catch {
+    res.status(500).send({ status: 'error', msg: error.message })
+  }
+} // done dut not tested
+
+const addAdminAccount = async (req, res) => {
   try {
     const { fullName, email, password, confirmPassword } = req.body
     if (password !== confirmPassword) {
@@ -114,16 +118,9 @@ const listAllUsers = async (req, res) => {
       .status(201)
       .send({ status: 'success', msg: 'Admin created successfully' })
   } catch {
-    res.status(500).send({ status: 'error', msg: error.message })
-  }
-} // in progress
-
-const addAdminAccount = async (req, res) => {
-  try {
-  } catch {
     throw error
   }
-} // in progress
+} // done dut not tested
 
 module.exports = {
   Register,
