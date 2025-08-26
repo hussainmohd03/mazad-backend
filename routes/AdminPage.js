@@ -10,13 +10,7 @@ router.put(
   controller.updateItemStatus
 )
 
-router.get(
-  '/items',
-  middleware.stripToken,
-  middleware.verifyToken,
-  middleware.isAdmin,
-  controller.ListAllItems
-)
+router.get('/items', controller.ListAllItems)
 
 router.get(
   '',
