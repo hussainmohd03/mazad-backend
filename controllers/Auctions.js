@@ -2,6 +2,7 @@ const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const Item = require('../models/Item')
+const { io } = require('../server')
 
 const nowUTC = () => new Date()
 
@@ -67,6 +68,9 @@ exports.createAuction = async (req, res) => {
       currentPrice: initialPrice,
       winningBid: null
     })
+
+    // TODO 6: emit event if auction is created as ongoing
+
     return res.status(201).send(auction)
   } catch (error) {
     throw error
@@ -85,7 +89,13 @@ exports.getAuction = async (req, res) => {
     const bidCount = (await Bidding.find({ auctionId: id })).length
 
     // TODO 1: If status='upcoming' and startDate == now, auto-promote to ongoing
-    
+    if (auction.status === 'upcoming' && auction.startDate == nowUTC()) {
+      auction.status = 'ongoing'
+      io.to(auction._id.toString()).emit('auctionStatusChanged', {
+        auctionId: auction._id,
+        status: 'ongoing'
+      })
+    }
 
     const response = { auction: auction, bidCount: bidCount }
 
@@ -95,16 +105,19 @@ exports.getAuction = async (req, res) => {
   }
 }
 
-
 exports.listAuctions = async (req, res) => {
   try {
-    const {status} = req.query 
+    const { status } = req.query
     const q = {}
-    if(status) q.status = status
+    if (status) q.status = status
 
-    const auction = await Auction.find(q)
+    const auctions = await Auction.find(q)
+      .sort({ createdAt: -1 })
+      .populate('itemId')
+
+    return res.status(200).send(auctions)
   } catch (error) {
-    
+    throw error
   }
 }
 
@@ -138,6 +151,22 @@ exports.placeBidding = async (req, res) => {
                 },
                 { new: true }
               )
+              // TODO 1: emit new bid
+              io.to(auctionId).emit('newBid', {
+                auctionId,
+                bid: newBid,
+                currentPrice: updatedAuction.currentPrice
+              })
+
+              // TODO 2: check if auction should be closed, if yes change state and emit change
+              if (auction.status === 'ongoing' && auction.endDate == nowUTC()) {
+                auction.status = 'closed'
+                io.to(auction._id.toString()).emit('auctionStatusChanged', {
+                  auctionId: auction._id,
+                  status: 'closed'
+                })
+              }
+
               return res.status(201).send({
                 msg: 'new bid created',
                 newBid: newBid,
@@ -149,6 +178,7 @@ exports.placeBidding = async (req, res) => {
         }
       }
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error
+  }
 }
-
