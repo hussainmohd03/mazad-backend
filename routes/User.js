@@ -33,8 +33,19 @@ router.delete(
   controller.deleteMyProfile
 )
 
-router.put("/me/watchlist/:auctionId", controller.addToWatchList)
-router.delete("/me/watchlist/:auctionId",controller.removeFromWatchList)
-router.get("/me/watchlist",controller.getWatchList)
+router.put("/me/watchlist/:auctionId", 
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.addToWatchList)
+
+router.delete("/me/watchlist/:auctionId",
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.removeFromWatchList)
+
+router.get("/me/watchlist",
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getWatchList)
 
 module.exports = router
