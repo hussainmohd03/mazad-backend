@@ -41,7 +41,7 @@ const pendingItem = async (req, res) => {
 
 const getingAllItems = async (req, res) => {
   try {
-    const AllItems = await Items.find()
+    const AllItems = await Items.find().populate('ownerId')
     res.status(200).send(AllItems)
   } catch (error) {
     res.status(500).json({ error: error.message })
