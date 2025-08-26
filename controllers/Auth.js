@@ -4,7 +4,6 @@ const middleware = require('../middleware/index')
 
 const { hashPassword, comparePassword, createToken } = require('../middleware')
 
-
 const Register = async (req, res) => {
   try {
     const { email, password, full_name } = req.body
@@ -13,7 +12,9 @@ const Register = async (req, res) => {
     const lastName = full_name.substring(space_index, full_name.length)
 
     let passwordHash = await middleware.hashPassword(password)
+    console.log('before')
     let existingUserInDB = await User.findOne({ email })
+    console.log(existingUserInDB)
 
     if (existingUserInDB) {
       return res.status(400).send('a user with this email exists. try another.')
