@@ -87,7 +87,7 @@ app.use('/auth', AuthRT)
 app.use('/admin', AdminRT)
 
 // listener
-app.listen(port, () => {
+io.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
 
