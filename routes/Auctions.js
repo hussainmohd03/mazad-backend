@@ -8,6 +8,7 @@ router.post(
   middleware.verifyToken,
   controller.createAuction
 )
+router.get('/:id', controller.getAuction)
 
 router.post(
   '/:id/bids',

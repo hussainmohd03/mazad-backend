@@ -15,7 +15,6 @@ exports.createAuction = async (req, res) => {
 
     //TODO 1: when item & user controllers are ready, check if item exists, is approved and user is the owner
     const item = await Item.findById(itemId)
-    console.log(item)
     if (item.ownerId != res.locals.payload.id) {
       return res.status(403).send({
         status: 'error',
@@ -71,6 +70,41 @@ exports.createAuction = async (req, res) => {
     return res.status(201).send(auction)
   } catch (error) {
     throw error
+  }
+}
+
+exports.getAuction = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const auction = await Auction.findById(id).populate('itemId')
+
+    if (!auction)
+      res.status(404).send({ status: 'error', msg: 'auction not found' })
+
+    const bidCount = (await Bidding.find({ auctionId: id })).length
+
+    // TODO 1: If status='upcoming' and startDate == now, auto-promote to ongoing
+    
+
+    const response = { auction: auction, bidCount: bidCount }
+
+    res.status(200).send(response)
+  } catch (error) {
+    throw error
+  }
+}
+
+
+exports.listAuctions = async (req, res) => {
+  try {
+    const {status} = req.query 
+    const q = {}
+    if(status) q.status = status
+
+    const auction = await Auction.find(q)
+  } catch (error) {
+    
   }
 }
 
