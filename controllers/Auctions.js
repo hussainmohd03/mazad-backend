@@ -2,7 +2,7 @@ const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const Item = require('../models/Item')
-const {io} = require('../server')
+const { io } = require('../server')
 
 const nowUTC = () => new Date()
 
@@ -111,8 +111,14 @@ exports.listAuctions = async (req, res) => {
     const q = {}
     if (status) q.status = status
 
-    const auction = await Auction.find(q)
-  } catch (error) {}
+    const auctions = await Auction.find(q)
+      .sort({ createdAt: -1 })
+      .populate('itemId')
+
+    return res.status(200).send(auctions)
+  } catch (error) {
+    throw error
+  }
 }
 
 exports.placeBidding = async (req, res) => {
@@ -145,6 +151,13 @@ exports.placeBidding = async (req, res) => {
                 },
                 { new: true }
               )
+
+              // TODO 1: emit new bid
+
+              // TODO 2: check if auction should be closed, if yes change state and emit change
+              if (auction.status === 'ongoing' && auction.endDate == nowUTC()) {
+                auction.status = 'closed'
+              }
               return res.status(201).send({
                 msg: 'new bid created',
                 newBid: newBid,
@@ -156,5 +169,7 @@ exports.placeBidding = async (req, res) => {
         }
       }
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error
+  }
 }
