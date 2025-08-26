@@ -151,7 +151,6 @@ exports.placeBidding = async (req, res) => {
                 },
                 { new: true }
               )
-
               // TODO 1: emit new bid
               io.to(auctionId).emit('newBid', {
                 auctionId,
@@ -167,6 +166,7 @@ exports.placeBidding = async (req, res) => {
                   status: 'closed'
                 })
               }
+
               return res.status(201).send({
                 msg: 'new bid created',
                 newBid: newBid,
