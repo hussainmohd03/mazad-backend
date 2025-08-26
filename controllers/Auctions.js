@@ -104,13 +104,11 @@ exports.placeBidding = async (req, res) => {
                 },
                 { new: true }
               )
-              return res
-                .status(201)
-                .send({
-                  msg: 'new bid created',
-                  newBid: newBid,
-                  updatedAuction: updatedAuction
-                })
+              return res.status(201).send({
+                msg: 'new bid created',
+                newBid: newBid,
+                updatedAuction: updatedAuction
+              })
             }
             return res.status(404).send({ msg: 'amount invalid' })
           }

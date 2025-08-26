@@ -20,4 +20,11 @@ router.post(
   middleware.isAdmin,
   controller.AddAdminAccount
 )
+
+router.get(
+  '/session',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.checkSession
+)
 module.exports = router
