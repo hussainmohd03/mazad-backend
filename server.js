@@ -86,6 +86,9 @@ app.use('/users', userRT)
 app.use('/auth', AuthRT)
 app.use('/admin', AdminRT)
 
+
+// TODO 1: Cron Job to check Auctions' status
+
 // listener
 io.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
