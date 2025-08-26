@@ -87,9 +87,7 @@ app.use('/admin', AdminRT)
 // TODO 1: Cron Job to check Auctions' status
 
 // listener
-io.listen(5000, () => {
-  console.log('websocket')
-})
+io.listen(5000)
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
