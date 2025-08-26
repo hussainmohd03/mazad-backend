@@ -55,8 +55,9 @@ const checkSession = async (req, res) => {
 
 const isAdmin = async (req, res, next) => {
   const { payload } = res.locals
+  console.log(payload)
   try {
-    if (payload.type === 'admin') {
+    if (payload.role === 'admin') {
       return next()
     } else {
       res

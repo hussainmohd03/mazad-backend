@@ -2,6 +2,8 @@ const User = require('../models/User')
 
 const middleware = require('../middleware/index')
 
+const { hashPassword, comparePassword, createToken } = require('../middleware')
+
 
 const Register = async (req, res) => {
   try {
@@ -57,7 +59,78 @@ const Login = async (req, res) => {
   }
 }
 
+const loginAsAdmin = async (req, res) => {
+  console.log('entters')
+  try {
+    console.log('here')
+    const { email, password } = req.body
+    console.log('hiii')
+    const admin = await User.findOne({ email, type: 'admin' })
+    console.log(admin)
+
+    if (!admin) {
+      console.log('reaches no admin')
+      return res.status(401).send({ status: 'error', msg: 'Admin not found' })
+    }
+    const matched = await comparePassword(password, admin.passwordHash)
+    if (!matched) {
+      return res
+        .status(401)
+        .send({ status: 'error', msg: 'Invalid credentials' })
+    }
+    const token = createToken({ id: admin._id, type: 'admin' })
+    res.status(200).send({ status: 'success', token })
+  } catch {
+    throw error
+  }
+} // done dut not tested
+
+const listAllUsers = async (req, res) => {
+  try {
+    const { fullName, email, password, confirmPassword } = req.body
+    if (password !== confirmPassword) {
+      return res
+        .status(400)
+        .send({ status: 'error', msg: 'Passwords do not match' })
+    }
+
+    const [firstName, lastName] = fullName.split(' ')
+    const existing = await User.findOne({ email })
+    if (existing) {
+      return res
+        .status(400)
+        .send({ status: 'error', msg: 'Email already in use' })
+    }
+
+    const hashedPassword = await hashPassword(password)
+    const newAdmin = new User({
+      firstName,
+      lastName: lastName || '',
+      email,
+      passwordHash: hashedPassword,
+      type: 'admin'
+    })
+
+    await newAdmin.save()
+    res
+      .status(201)
+      .send({ status: 'success', msg: 'Admin created successfully' })
+  } catch {
+    res.status(500).send({ status: 'error', msg: error.message })
+  }
+} // in progress
+
+const addAdminAccount = async (req, res) => {
+  try {
+  } catch {
+    throw error
+  }
+} // in progress
+
 module.exports = {
   Register,
-  Login
+  Login,
+  loginAsAdmin,
+  listAllUsers,
+  addAdminAccount
 }
