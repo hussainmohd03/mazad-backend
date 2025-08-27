@@ -3,7 +3,7 @@ const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const Item = require('../models/Item')
 const { io } = require('../server')
-
+const User = require('../models/User')
 const nowUTC = () => new Date()
 
 // create auction logic
@@ -130,8 +130,18 @@ exports.getAuctionByCategory = async (req, res) => {
 exports.getBiddingsByUser = async (req, res) => {
   try {
     const { id } = req.params
+    let bidding_balance = 0
     const biddings = await Bidding.find({ userId: id }).sort({ createdAt: -1 })
-    res.status(200).send(biddings)
+    biddings.forEach((bidding) => (bidding_balance += bidding.amount))
+    const user = await User.findById(res.locals.payload.id)
+    const balance = user.balance
+    const used = (bidding_balance / (balance + bidding_balance)) * 100
+    res.status(200).send({
+      remaining: balance - bidding_balance,
+      bidding_limit: bidding_balance,
+      deposit: balance + bidding_balance,
+      used_percentage: Math.ceil(used)
+    })
   } catch (error) {
     throw error
   }
