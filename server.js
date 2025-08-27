@@ -17,6 +17,8 @@ const io = new Server(server, {
   }
 })
 
+global.io = io
+
 // socket connection
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id)
@@ -37,12 +39,6 @@ io.on('connection', (socket) => {
   socket.on('newBid', (data) => {
     const { auctionId, userId, amount } = data
     console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
-  })
-
-  // auction status changed event
-  socket.on('auctionStatusChanged', (data) => {
-    const { auctionId, status } = data
-    console.log(`Auction ${auctionId} status changed to ${status}`)
   })
 
   socket.on('disconnect', () => {
@@ -97,5 +93,3 @@ io.listen(5000)
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
-
-global.io = io
