@@ -112,6 +112,10 @@ exports.listAuctions = async (req, res) => {
   }
 }
 
+exports.getAuctionByCategory = async (req, res) => {
+  
+}
+
 exports.placeBidding = async (req, res) => {
   try {
     const { id } = res.locals.payload
