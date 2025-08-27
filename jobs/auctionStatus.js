@@ -14,12 +14,7 @@ const checkAuctions = async () => {
 
   for (let auction of upcoming) {
     auction.status = 'ongoing'
-    //TODO 2: notify frontend
-    // TODO 2.1: remove the hardcoded ids
-    global.io.to('64f3a2c3d4e5f67890123444').emit('auctionStatusChanged', {
-      auctionId: '64f3a2c3d4e5f67890123444',
-      status: 'ongoing'
-    })
+    S
     await auction.save()
   }
 
@@ -37,13 +32,8 @@ const checkAuctions = async () => {
 
     // TODO 6: Trigger transaction
 
-    //TODO 7: frontend
     await auction.save()
 
-    global.io.to(auction._id.toString()).emit('auctionStatusChanged', {
-      auctionId: auction._id,
-      status: 'closed'
-    })
   }
 }
 

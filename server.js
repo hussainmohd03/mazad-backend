@@ -41,12 +41,6 @@ io.on('connection', (socket) => {
     console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
   })
 
-  // auction status changed event
-  socket.on('auctionStatusChanged', (data) => {
-    const { auctionId, status } = data
-    console.log(`Auction ${auctionId} status changed to ${status}`)
-  })
-
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
   })
