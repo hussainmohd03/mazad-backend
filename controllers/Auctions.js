@@ -64,6 +64,7 @@ exports.createAuction = async (req, res) => {
       startDate: sd,
       endDate: ed,
       status,
+      category: item.category,
       initialPrice,
       currentPrice: initialPrice,
       winningBid: null
@@ -98,9 +99,10 @@ exports.getAuction = async (req, res) => {
 
 exports.listAuctions = async (req, res) => {
   try {
-    const { status } = req.query
+    const { status, category } = req.query
     const q = {}
     if (status) q.status = status
+    if (category) q.category = category
 
     const auctions = await Auction.find(q)
       .sort({ createdAt: -1 })
@@ -113,7 +115,7 @@ exports.listAuctions = async (req, res) => {
 }
 
 exports.getAuctionByCategory = async (req, res) => {
-  
+  const { category } = req.query
 }
 
 exports.placeBidding = async (req, res) => {
@@ -177,4 +179,3 @@ exports.placeBidding = async (req, res) => {
     throw error
   }
 }
-

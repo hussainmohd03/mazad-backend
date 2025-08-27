@@ -22,24 +22,32 @@ const checkAuctions = async () => {
     await auction.save()
   }
 
-  //TODO 3: get all ongoing auctions with endDate <= now and change their status to closed, get highest bid and set winningBidID
+  //TODO 3: get all ongoing auctions with endDate <= now and change their status to closed,
   const expired = await Auction.find({
     status: 'ongoing',
     endDate: { $lte: nowUTC() }
   })
   for (let auction of expired) {
     auction.status = 'closed'
-    //TODO 2: notify frontend
+
+    //TODO 4:  get highest bid and set winningBidID, 
+
+
+    //TODO 5: notify frontend
+    
+    // TODO 6: Trigger transaction
+
+    //TODO 7: frontend
+    await auction.save()
+
+
     global.io.to(auction._id.toString()).emit('auctionStatusChanged', {
       auctionId: auction._id,
       status: 'closed'
     })
-    await auction.save()
   }
 
-  // TODO 4: Trigger transaction
 
-  //TODO 5: frontend
 }
 
 module.exports = checkAuctions
