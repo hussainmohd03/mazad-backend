@@ -14,7 +14,6 @@ const checkAuctions = async () => {
 
   for (let auction of upcoming) {
     auction.status = 'ongoing'
-    S
     await auction.save()
   }
 
@@ -27,13 +26,20 @@ const checkAuctions = async () => {
     auction.status = 'closed'
 
     //TODO 4:  get highest bid and set winningBidID,
-
-    //TODO 5: notify frontend
-
-    // TODO 6: Trigger transaction
-
+    const highest_bid = await Bidding.find().sort({ createdAt: -1 })
     await auction.save()
 
+    // TODO 5: Trigger transaction
+    if (highest_bid) {
+      auction.winningBid = highest_bid._id
+      await Transaction.create({
+        sellerId: auction.ownerId,
+        buyerId: highest_bid.userId,
+        price: highest_bid.amount,
+        itemId: auction.itemId,
+        date: nowUTC()
+      })
+    }
   }
 }
 
