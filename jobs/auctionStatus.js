@@ -7,12 +7,19 @@ const nowUTC = () => new Date()
 
 const checkAuctions = async () => {
   //TODO 1: Get all upcoming auctions with startData <= now and change their status to ongoing
-  await Auction.updateMany(
-    { status: 'upcoming', startDate: { $lte: nowUTC() } },
-    { $set: { status: 'ongoing' } }
-  )
+  const upcoming = await Auction.find({
+    status: 'upcoming',
+    startDate: { $lte: nowUTC() }
+  })
 
-  //TODO 2: notify frontend
+  for (let auction of upcoming) {
+    auction.status = 'ongoing'
+    //TODO 2: notify frontend
+    io.to(auction._id.toString()).emit('auctionStatusChanged', {
+      auctionId: auction._id,
+      status: 'ongoing'
+    })
+  }
 
   //TODO 3: get all ongoing auctions with endDate <= now and change their status to closed, get highest bid and set winningBidID
   // const expired = await Auction.find({

@@ -88,15 +88,6 @@ exports.getAuction = async (req, res) => {
 
     const bidCount = (await Bidding.find({ auctionId: id })).length
 
-    // TODO 1: If status='upcoming' and startDate == now, auto-promote to ongoing
-    if (auction.status === 'upcoming' && auction.startDate <= nowUTC()) {
-      auction.status = 'ongoing'
-      io.to(auction._id.toString()).emit('auctionStatusChanged', {
-        auctionId: auction._id,
-        status: 'ongoing'
-      })
-    }
-
     const response = { auction: auction, bidCount: bidCount }
 
     res.status(200).send(response)
