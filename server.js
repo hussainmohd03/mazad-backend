@@ -17,6 +17,8 @@ const io = new Server(server, {
   }
 })
 
+global.io = io
+
 // socket connection
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id)
@@ -97,5 +99,3 @@ io.listen(5000)
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
-
-global.io = io
