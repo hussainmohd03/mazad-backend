@@ -115,7 +115,16 @@ exports.listAuctions = async (req, res) => {
 }
 
 exports.getAuctionByCategory = async (req, res) => {
-  const { category } = req.query
+  try {
+    const { name } = req.query
+    const auctions = await Auction.find({ category: name })
+      .sort({ createdAt: -1 })
+      .populate('itemId')
+
+    res.status(200).send(auctions)
+  } catch (error) {
+    res.send('eahga')
+  }
 }
 
 exports.placeBidding = async (req, res) => {
