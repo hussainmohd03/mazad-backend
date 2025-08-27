@@ -127,6 +127,16 @@ exports.getAuctionByCategory = async (req, res) => {
   }
 }
 
+exports.getBiddingsByUser = async (req, res) => {
+  try {
+    const { id } = req.params
+    const biddings = await Bidding.find({ userId: id }).sort({ createdAt: -1 })
+    res.status(200).send(biddings)
+  } catch (error) {
+    throw error
+  }
+}
+
 exports.placeBidding = async (req, res) => {
   try {
     const { id } = res.locals.payload
@@ -158,7 +168,7 @@ exports.placeBidding = async (req, res) => {
                 { new: true }
               )
               // TODO 1: emit new bid
-              io.to(auctionId).emit('newBid', {
+              global.io.to(auctionId).emit('newBid', {
                 auctionId,
                 bid: newBid,
                 currentPrice: updatedAuction.currentPrice
