@@ -5,6 +5,7 @@ const cors = require('cors')
 const path = require('path')
 const http = require('http')
 const { Server } = require('socket.io')
+const cron = require('node-cron')
 
 // initialize app
 const app = express()
@@ -85,6 +86,11 @@ app.use('/auth', AuthRT)
 app.use('/admin', AdminRT)
 
 // TODO 1: Cron Job to check Auctions' status
+const checkAuctions = require('./jobs/auctionStatus')
+cron.schedule('* * * * *', () => {
+  console.log('Running checkAuction Job')
+  checkAuctions()
+})
 
 // listener
 io.listen(5000)
