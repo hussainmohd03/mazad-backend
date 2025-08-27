@@ -1,5 +1,25 @@
 const mongoose = require('mongoose')
 
+const CATEGORIES = [
+  'heavy-machinery',
+  'art',
+  'pearls',
+  'jewellery',
+  'gold',
+  'electronics',
+  'industrial',
+  'watches',
+  'bags',
+  'properties',
+  'scrap',
+  'boats',
+  'machinery',
+  'vehicles',
+  'general-items',
+  'court-properties',
+  'car-plates'
+]
+
 const auctionSchema = new mongoose.Schema(
   {
     itemId: {
@@ -12,7 +32,8 @@ const auctionSchema = new mongoose.Schema(
       ref: 'User',
       required: true
     },
-    startDate: { type: Date, required: true},
+    category: { type: String, enum: CATEGORIES, required: true },
+    startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     status: {
       type: String,

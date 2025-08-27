@@ -64,6 +64,7 @@ exports.createAuction = async (req, res) => {
       startDate: sd,
       endDate: ed,
       status,
+      category: item.category,
       initialPrice,
       currentPrice: initialPrice,
       winningBid: null
@@ -88,15 +89,6 @@ exports.getAuction = async (req, res) => {
 
     const bidCount = (await Bidding.find({ auctionId: id })).length
 
-    // TODO 1: If status='upcoming' and startDate == now, auto-promote to ongoing
-    if (auction.status === 'upcoming' && auction.startDate <= nowUTC()) {
-      auction.status = 'ongoing'
-      io.to(auction._id.toString()).emit('auctionStatusChanged', {
-        auctionId: auction._id,
-        status: 'ongoing'
-      })
-    }
-
     const response = { auction: auction, bidCount: bidCount }
 
     res.status(200).send(response)
@@ -107,9 +99,10 @@ exports.getAuction = async (req, res) => {
 
 exports.listAuctions = async (req, res) => {
   try {
-    const { status } = req.query
+    const { status, category } = req.query
     const q = {}
     if (status) q.status = status
+    if (category) q.category = category
 
     const auctions = await Auction.find(q)
       .sort({ createdAt: -1 })
@@ -118,6 +111,19 @@ exports.listAuctions = async (req, res) => {
     return res.status(200).send(auctions)
   } catch (error) {
     throw error
+  }
+}
+
+exports.getAuctionByCategory = async (req, res) => {
+  try {
+    const { name } = req.query
+    const auctions = await Auction.find({ category: name })
+      .sort({ createdAt: -1 })
+      .populate('itemId')
+
+    res.status(200).send(auctions)
+  } catch (error) {
+    res.send('eahga')
   }
 }
 
