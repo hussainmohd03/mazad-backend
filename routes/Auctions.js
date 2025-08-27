@@ -29,6 +29,12 @@ router.get(
   controller.listAuctions
 )
 
+router.get(
+  '/my_bids/:id',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getBiddingsByUser
+)
 router.post(
   '/:id/bids',
   middleware.stripToken,
