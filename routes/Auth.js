@@ -16,14 +16,10 @@ router.post(
   '/admin/login',
   middleware.stripToken,
   middleware.verifyToken,
-  middleware.isAdmin,
   controller.LoginAsAdmin
 )
 
-router.post(
-  '/admin/signup',
-  controller.SignUpAdmin
-)
+router.post('/admin/signup', controller.SignUpAdmin)
 
 router.get(
   '/session',
