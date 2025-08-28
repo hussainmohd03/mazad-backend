@@ -1,6 +1,4 @@
-const mongoose = require('mongoose')
-const Auction = require('./auction')
-
+import mongoose from 'mongoose'
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, trim: true, required: true },
@@ -26,4 +24,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-module.exports = mongoose.model('User', userSchema)
+const User = mongoose.model('User', userSchema)
+export default User
