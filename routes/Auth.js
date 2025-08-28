@@ -15,10 +15,7 @@ router.post(
 
 router.post(
   '/admin/signup',
-  middleware.stripToken,
-  middleware.verifyToken,
-  middleware.isAdmin,
-  controller.AddAdminAccount
+  controller.SignUpAdmin
 )
 
 router.get(

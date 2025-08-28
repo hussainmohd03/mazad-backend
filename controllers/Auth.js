@@ -64,6 +64,7 @@ const Login = async (req, res) => {
 const LoginAsAdmin = async (req, res) => {
   try {
     const { email, password } = req.body
+    console.log('email', email)
     const admin = await User.findOne({ email, type: 'admin' })
 
     if (!admin) {
@@ -82,19 +83,19 @@ const LoginAsAdmin = async (req, res) => {
   }
 }
 
-const AddAdminAccount = async (req, res) => {
+const SignUpAdmin = async (req, res) => {
   try {
     const { full_name, email, password } = req.body
-    const [firstName, lastName] = full_name.split(' ')
+    const space_index = full_name.indexOf(' ')
+    const firstName = full_name.substring(0, space_index)
+    const lastName = full_name.substring(space_index, full_name.length)
     const existing = await User.findOne({ email })
     if (existing) {
       return res
         .status(400)
         .send({ status: 'error', msg: 'email already in use' })
     }
-
     const hashedPassword = await hashPassword(password)
-
     const newAdmin = new User({
       firstName,
       lastName: lastName || '',
@@ -110,7 +111,7 @@ const AddAdminAccount = async (req, res) => {
       user: newAdmin
     })
   } catch {
-    res.status(500).send({ status: 'error', msg: error.message })
+    res.status(500).send({ status: 'error' })
   }
 }
 
@@ -118,5 +119,5 @@ module.exports = {
   Register,
   Login,
   LoginAsAdmin,
-  AddAdminAccount
+  SignUpAdmin
 }
