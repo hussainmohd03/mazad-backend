@@ -153,6 +153,7 @@ exports.placeBidding = async (req, res) => {
         if (auction.status === 'ongoing') {
           const sd = new Date(auction.startDate)
           const ed = new Date(auction.endDate)
+          // TODO 1: check user balance before placing a bid
           if (sd <= nowUTC() < ed) {
             if (amount > auction.currentPrice + step) {
               const newBid = await Bidding.create({
