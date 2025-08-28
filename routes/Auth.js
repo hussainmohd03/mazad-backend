@@ -11,6 +11,7 @@ router.get(
   middleware.verifyToken,
   controller.getFinancialInfo
 )
+
 router.post(
   '/admin/login',
   middleware.stripToken,

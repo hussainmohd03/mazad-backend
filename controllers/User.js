@@ -103,6 +103,8 @@ const removeFromWatchList = async (req, res) => {
       { $pull: { watchList: req.params.auctionId } },
       { new: true }
     )
+
+    res.status(200).send({ removedItem })
   } catch (error) {
     throw error
   }
@@ -111,7 +113,7 @@ const removeFromWatchList = async (req, res) => {
 const getWatchList = async (req, res) => {
   try {
     const currentUser = await User.findById(req.body.id).populate('watchList')
-    res.json(currentUser.watchList)
+    res.status(200).send(currentUser.watchList)
   } catch (error) {
     throw error
   }
