@@ -1,8 +1,8 @@
 const User = require('../models/User')
 const Item = require('../models/Item')
 const middleware = require('../middleware/index')
-
 const { hashPassword, comparePassword, createToken } = require('../middleware')
+const Bidding = require('../models/Bidding')
 
 const Register = async (req, res) => {
   try {
@@ -55,6 +55,30 @@ const Login = async (req, res) => {
     } else {
       return res.status(400).send('no user exists with that email.')
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+const getFinancialInfo = async (req, res) => {
+  try {
+    const existingUserInDB = await User.findById(res.locals.payload.id)
+    let bidding_balance = 0
+    const biddings = await Bidding.find({
+      userId: existingUserInDB._id
+    }).sort({
+      createdAt: -1
+    })
+    biddings.forEach((bidding) => (bidding_balance += bidding.amount))
+    const user = await User.findById(existingUserInDB._id)
+    const balance = user.balance
+    const used = (bidding_balance / (balance + bidding_balance)) * 100
+    res.status(200).send({
+      remaining: balance - bidding_balance,
+      bidding_limit: bidding_balance,
+      deposit: balance + bidding_balance,
+      used_percentage: Math.ceil(used)
+    })
   } catch (error) {
     throw error
   }
@@ -118,6 +142,7 @@ const AddAdminAccount = async (req, res) => {
 module.exports = {
   Register,
   Login,
+  getFinancialInfo,
   LoginAsAdmin,
   AddAdminAccount
 }
