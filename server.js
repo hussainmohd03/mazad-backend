@@ -48,6 +48,7 @@ io.on('connection', (socket) => {
 
 // db config
 const mongoose = require('./config/db')
+// mongoose()
 
 
 // set port config
