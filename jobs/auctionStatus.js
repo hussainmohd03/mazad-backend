@@ -38,7 +38,7 @@ const checkAuctions = async () => {
         // TODO 6.2 : if sufficient reduce balance
         highest_bidder.balance -= auction.currentPrice
       }
-      // TODO 6: Trigger transaction
+      // TODO 7: Trigger transaction
       auction.winningBid = highest_bid._id
       await auction.save()
       await highest_bidder.save()
