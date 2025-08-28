@@ -91,7 +91,7 @@ cron.schedule('* * * * *', () => {
 })
 
 // listener
-io.listen(6000)
+io.listen(5045)
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
