@@ -5,6 +5,12 @@ const middleware = require('../middleware/index')
 router.post('/register', controller.Register)
 router.post('/login', controller.Login)
 
+router.get(
+  '/details',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getFinancialInfo
+)
 router.post(
   '/admin/login',
   middleware.stripToken,

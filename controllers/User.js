@@ -48,11 +48,9 @@ const updatePassword = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { id } = res.locals.payload
-
     const updatedProfile = await User.findByIdAndUpdate(id, req.body, {
       new: true
     })
-
     res
       .status(200)
       .send({ msg: 'profile successfully updated', user: updatedProfile })
