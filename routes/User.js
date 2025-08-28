@@ -2,17 +2,14 @@ const controller = require('../controllers/User')
 const router = require('express').Router()
 const middleware = require('../middleware/index')
 
-
-
-
-router.post(
+router.put(
   '/me/password',
   middleware.stripToken,
   middleware.verifyToken,
   controller.updatePassword
 )
 
-router.post(
+router.put(
   '/me',
   middleware.stripToken,
   middleware.verifyToken,
@@ -33,19 +30,25 @@ router.delete(
   controller.deleteMyProfile
 )
 
-router.put("/me/watchlist/:auctionId", 
+router.put(
+  '/me/watchlist/:auctionId',
   middleware.stripToken,
   middleware.verifyToken,
-  controller.addToWatchList)
+  controller.addToWatchList
+)
 
-router.delete("/me/watchlist/:auctionId",
+router.put(
+  '/me/watchlist/:auctionId',
   middleware.stripToken,
   middleware.verifyToken,
-  controller.removeFromWatchList)
+  controller.removeFromWatchList
+)
 
-router.get("/me/watchlist",
+router.get(
+  '/me/watchlist',
   middleware.stripToken,
   middleware.verifyToken,
-  controller.getWatchList)
+  controller.getWatchList
+)
 
 module.exports = router

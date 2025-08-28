@@ -8,6 +8,13 @@ router.post(
   middleware.verifyToken,
   controller.createAuction
 )
+
+router.get(
+  '/category',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getAuctionByCategory
+)
 router.get(
   '/:id',
   middleware.stripToken,
@@ -21,6 +28,7 @@ router.get(
   middleware.verifyToken,
   controller.listAuctions
 )
+
 router.post(
   '/:id/bids',
   middleware.stripToken,

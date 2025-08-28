@@ -4,6 +4,7 @@ const middleware = require('../middleware')
 
 const updatePassword = async (req, res) => {
   try {
+    console.log('enters update password controller from backend')
     const { id } = res.locals.payload
     const { old_password, new_password } = req.body
     let currentUser = await User.findById(id)
@@ -39,7 +40,6 @@ const updatePassword = async (req, res) => {
       return res
         .status(200)
         .send({ status: 'password updated successfully', user: payload })
-
     }
     res.status(401).send({ status: 'error', msg: 'update password failed' })
   } catch (error) {}
@@ -48,11 +48,9 @@ const updatePassword = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { id } = res.locals.payload
-
     const updatedProfile = await User.findByIdAndUpdate(id, req.body, {
       new: true
     })
-
     res
       .status(200)
       .send({ msg: 'profile successfully updated', user: updatedProfile })
@@ -86,38 +84,39 @@ const deleteMyProfile = async (req, res) => {
   } catch (error) {}
 }
 
-
-const addToWatchList = async(req,res)=>{
-    try{
-        const addedItem = await User.findByIdAndUpdate(
-            req.body.id,
-            {$push: {watchList: req.params.auctionId}},
-            {new:true}
-        )
-    }catch(error){
-        throw(error)
-    }
+const addToWatchList = async (req, res) => {
+  try {
+    const addedItem = await User.findByIdAndUpdate(
+      req.body.id,
+      { $push: { watchList: req.params.auctionId } },
+      { new: true }
+    )
+  } catch (error) {
+    throw error
+  }
 }
 
-const removeFromWatchList = async(req,res)=>{
-    try{
-        const removedItem = await User.findByIdAndUpdate(
-            req.body.id,
-            {$pull: {watchList: req.params.auctionId}},
-            {new:true}
-        )
-    }catch(error){
-        throw(error)
-    }
+const removeFromWatchList = async (req, res) => {
+  try {
+    const removedItem = await User.findByIdAndUpdate(
+      req.body.id,
+      { $pull: { watchList: req.params.auctionId } },
+      { new: true }
+    )
+
+    res.status(200).send({ removedItem })
+  } catch (error) {
+    throw error
+  }
 }
 
-const getWatchList = async(req,res)=>{
-    try{
-        const currentUser = await User.findById(req.body.id).populate('watchList')
-        res.json(currentUser.watchList)
-    }catch(error){
-        throw(error)
-    }
+const getWatchList = async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.body.id).populate('watchList')
+    res.status(200).send(currentUser.watchList)
+  } catch (error) {
+    throw error
+  }
 }
 
 module.exports = {
@@ -129,4 +128,3 @@ module.exports = {
   removeFromWatchList,
   getWatchList
 }
-

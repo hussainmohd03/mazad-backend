@@ -5,6 +5,7 @@ const cors = require('cors')
 const path = require('path')
 const http = require('http')
 const { Server } = require('socket.io')
+const cron = require('node-cron')
 
 // initialize app
 const app = express()
@@ -15,6 +16,8 @@ const io = new Server(server, {
     methods: ['GET', 'POST']
   }
 })
+
+global.io = io
 
 // socket connection
 io.on('connection', (socket) => {
@@ -38,12 +41,6 @@ io.on('connection', (socket) => {
     console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
   })
 
-  // auction status changed event
-  socket.on('auctionStatusChanged', (data) => {
-    const { auctionId, status } = data
-    console.log(`Auction ${auctionId} status changed to ${status}`)
-  })
-
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
   })
@@ -52,6 +49,7 @@ io.on('connection', (socket) => {
 // db config
 const mongoose = require('./config/db')
 // mongoose()
+
 
 // set port config
 const port = process.env.PORT ? process.env.PORT : 3000
@@ -86,11 +84,14 @@ app.use('/auth', AuthRT)
 app.use('/admin', AdminRT)
 
 // TODO 1: Cron Job to check Auctions' status
+const checkAuctions = require('./jobs/auctionStatus')
+cron.schedule('* * * * *', () => {
+  console.log('Running checkAuction Job')
+  checkAuctions()
+})
 
 // listener
-io.listen(5000)
+io.listen(6000)
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
-
-module.exports = { io, server }
