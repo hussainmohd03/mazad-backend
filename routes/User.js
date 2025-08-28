@@ -37,7 +37,7 @@ router.put(
   controller.addToWatchList
 )
 
-router.delete(
+router.put(
   '/me/watchlist/:auctionId',
   middleware.stripToken,
   middleware.verifyToken,

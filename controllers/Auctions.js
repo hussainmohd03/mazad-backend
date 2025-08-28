@@ -123,7 +123,7 @@ exports.getAuctionByCategory = async (req, res) => {
 
     res.status(200).send(auctions)
   } catch (error) {
-    res.send('eahga')
+    throw error
   }
 }
 
@@ -145,6 +145,7 @@ exports.placeBidding = async (req, res) => {
         if (auction.status === 'ongoing') {
           const sd = new Date(auction.startDate)
           const ed = new Date(auction.endDate)
+          // TODO 1: check user balance before placing a bid
           if (sd <= nowUTC() < ed) {
             if (amount > auction.currentPrice + step) {
               const newBid = await Bidding.create({
@@ -165,15 +166,6 @@ exports.placeBidding = async (req, res) => {
                 bid: newBid,
                 currentPrice: updatedAuction.currentPrice
               })
-
-              // TODO 2: check if auction should be closed, if yes change state and emit change
-              if (auction.status === 'ongoing' && auction.endDate <= nowUTC()) {
-                auction.status = 'closed'
-                io.to(auction._id.toString()).emit('auctionStatusChanged', {
-                  auctionId: auction._id,
-                  status: 'closed'
-                })
-              }
 
               return res.status(201).send({
                 msg: 'new bid created',

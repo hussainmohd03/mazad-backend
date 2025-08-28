@@ -1,7 +1,7 @@
 const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
-// const { io } = require('../server')
+const User = require('../models/User')
 
 const nowUTC = () => new Date()
 
@@ -30,10 +30,18 @@ const checkAuctions = async () => {
       amount: -1
     })
 
-    // TODO 5: Trigger transaction
+    // TODO 6:  user Balance
     if (highest_bid) {
+      const highest_bidder = await User.findById(highest_bid.userId)
+      // TODO 6.1: check user balance
+      if (highest_bidder.balance >= auction.currentPrice) {
+        // TODO 6.2 : if sufficient reduce balance
+        highest_bidder.balance -= auction.currentPrice
+      }
+      // TODO 7: Trigger transaction
       auction.winningBid = highest_bid._id
       await auction.save()
+      await highest_bidder.save()
       await Transaction.create({
         sellerId: auction.ownerId,
         buyerId: highest_bid.userId,
