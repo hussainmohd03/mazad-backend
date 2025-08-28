@@ -4,6 +4,7 @@ const middleware = require('../middleware')
 
 const updatePassword = async (req, res) => {
   try {
+    console.log('enters update password controller from backend')
     const { id } = res.locals.payload
     const { old_password, new_password } = req.body
     let currentUser = await User.findById(id)
@@ -47,11 +48,9 @@ const updatePassword = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { id } = res.locals.payload
-
     const updatedProfile = await User.findByIdAndUpdate(id, req.body, {
       new: true
     })
-
     res
       .status(200)
       .send({ msg: 'profile successfully updated', user: updatedProfile })

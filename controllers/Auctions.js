@@ -3,7 +3,7 @@ const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const Item = require('../models/Item')
 const { io } = require('../server')
-
+const User = require('../models/User')
 const nowUTC = () => new Date()
 
 // create auction logic
@@ -127,15 +127,7 @@ exports.getAuctionByCategory = async (req, res) => {
   }
 }
 
-exports.getBiddingsByUser = async (req, res) => {
-  try {
-    const { id } = req.params
-    const biddings = await Bidding.find({ userId: id }).sort({ createdAt: -1 })
-    res.status(200).send(biddings)
-  } catch (error) {
-    throw error
-  }
-}
+
 
 exports.placeBidding = async (req, res) => {
   try {

@@ -49,6 +49,7 @@ io.on('connection', (socket) => {
 // db config
 const mongoose = require('./config/db')
 
+
 // set port config
 const port = process.env.PORT ? process.env.PORT : 3000
 
@@ -89,7 +90,7 @@ cron.schedule('* * * * *', () => {
 })
 
 // listener
-io.listen(5000)
+io.listen(6000)
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
