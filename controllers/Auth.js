@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const User = require('../models/user')
 const Item = require('../models/Item')
 const middleware = require('../middleware/index')
 const { hashPassword, comparePassword, createToken } = require('../middleware')
@@ -47,7 +47,7 @@ const Login = async (req, res) => {
           email: existingUserInDB.email,
           first_name: existingUserInDB.firstName,
           last_name: existingUserInDB.lastName,
-          role: existingUserInDB.type
+          type: existingUserInDB.type
         }
         let token = middleware.createToken(payload)
         return res.status(200).send({ user: payload, token })
@@ -86,6 +86,7 @@ const getFinancialInfo = async (req, res) => {
 
 // tested and works
 const LoginAsAdmin = async (req, res) => {
+  console.log('joined login as admin')
   try {
     const { email, password } = req.body
     console.log('email', email)
@@ -100,8 +101,16 @@ const LoginAsAdmin = async (req, res) => {
         .status(401)
         .send({ status: 'error', msg: 'Invalid credentials' })
     }
-    const token = createToken({ id: admin._id, type: 'admin' })
-    res.status(200).send({ status: 'success', token })
+    let payload = {
+      id: existingUserInDB._id,
+      email: existingUserInDB.email,
+      first_name: existingUserInDB.firstName,
+      last_name: existingUserInDB.lastName,
+      type: existingUserInDB.type
+    }
+
+    const token = middleware.createToken({ payload })
+    res.status(200).send({ status: 'success', token, admin })
   } catch {
     throw error
   }
