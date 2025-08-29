@@ -157,10 +157,13 @@ exports.placeBidding = async (req, res) => {
               })
 
               // TODO 3: if there is and it's not the same user release lockedAmount
-              if (previousBid && previousBid.userId !== id) {
-                const previousBidder = await User.findById(previousBid.userId)
+              if (previousBid.length !== 0 && previousBid[0].userId !== id) {
+                console.log(previousBid[0])
+                const previousBidder = await User.findById(
+                  previousBid[0].userId
+                )
                 if (previousBidder) {
-                  previousBidder.lockedAmount -= previousBid.amount
+                  previousBidder.lockedAmount -= previousBid[0].amount
                   await previousBidder.save()
                 }
               }
@@ -178,9 +181,8 @@ exports.placeBidding = async (req, res) => {
                 { new: true }
               )
 
-              let extraToLock = amount - auction.currentPrice
               // TODO 4: update user lockedAmount
-              user.lockedAmount += extraToLock
+              user.lockedAmount += amount
               await user.save()
 
               // TODO 5: emit new bid
