@@ -151,10 +151,18 @@ exports.placeBidding = async (req, res) => {
           }
           if (sd <= nowUTC() < ed) {
             if (amount > auction.currentPrice + step) {
-              // TODO 2: find previous bidder 
-    
+              // TODO 2: find previous bidder
+              const previousBid = await Bidding.find({ auctionId }).sort({
+                amount: -1
+              })
+
               // TODO 3: if there is and it's not the same user release lockedAmount
-            
+              if (previousBid && previousBid.userId !== id) {
+                const previousBidder = await User.findById(previousBid.userId)
+                previousBidder.lockedAmount -= previousBid.amount
+                await previousBidder.save()
+              }
+
               const newBid = await Bidding.create({
                 auctionId: auctionId,
                 userId: id,
