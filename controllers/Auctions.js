@@ -144,7 +144,11 @@ exports.placeBidding = async (req, res) => {
           const sd = new Date(auction.startDate)
           const ed = new Date(auction.endDate)
           // TODO 1: check user balance before placing a bid
-
+          const user = await User.findById(id)
+          const availableBalance = user.balance - user.lockedAmount
+          if (availableBalance < amount) {
+            return res.status(400).send('insufficient funds')
+          }
           if (sd <= nowUTC() < ed) {
             if (amount > auction.currentPrice + step) {
               // TODO 2: find previous bidder 
