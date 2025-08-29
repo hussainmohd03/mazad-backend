@@ -32,7 +32,7 @@ const updateItemStatus = async (req, res) => {
 
 const ListAllItems = async (req, res) => {
   try {
-    const items = await Item.find({})
+    const items = await Item.find({}).populate('ownerId')
     if (items) {
       res.send({ msg: 'success all items fetched', item: items })
     } else {
@@ -66,6 +66,7 @@ const updateAdminProfile = async (req, res) => {
     res.send({ msg: 'account edited', admin: admin })
   } catch (error) {}
 }
+
 module.exports = {
   updateItemStatus,
   ListAllItems,

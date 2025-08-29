@@ -3,12 +3,12 @@ const router = require('express').Router()
 const middleware = require('../middleware/index')
 
 router.put(
-  '/items/:id/',
+  '/items/:id/updateItem',
   middleware.stripToken,
   middleware.verifyToken,
   middleware.isAdmin,
   controller.updateItemStatus
-) 
+)
 
 router.get(
   '/items',
