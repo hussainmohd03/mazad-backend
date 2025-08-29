@@ -35,8 +35,6 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.id} left auction ${auctionId}`)
   })
 
-  
-
   // new bid event
   // socket.on('newBid', (data) => {
   //   const { auctionId, userId, amount } = data

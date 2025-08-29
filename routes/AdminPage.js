@@ -41,4 +41,7 @@ router.put(
   middleware.isAdmin,
   controller.updateAdminProfile
 )
+
+router.get('/allbiddings', controller.getAllBiddings)
+
 module.exports = router

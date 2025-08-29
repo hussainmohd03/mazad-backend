@@ -31,7 +31,7 @@ const checkAuctions = async () => {
     })
 
     // TODO 6:  user Balance
-    if (highest_bid) {
+    if (highest_bid.length !== 0) {
       const highest_bidder = await User.findById(highest_bid.userId)
       // TODO 6.1: check user balance
       if (highest_bidder.balance >= auction.currentPrice) {
