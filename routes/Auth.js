@@ -20,10 +20,7 @@ router.post(
   controller.LoginAsAdmin
 )
 
-router.post(
-  '/admin/signup',
-  controller.SignUpAdmin
-)
+router.post('/admin/signup', controller.SignUpAdmin)
 
 router.get(
   '/session',
