@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const User = require('../models/user')
 const Item = require('../models/Item')
 const middleware = require('../middleware/index')
 const { hashPassword, comparePassword, createToken } = require('../middleware')
@@ -47,7 +47,7 @@ const Login = async (req, res) => {
           email: existingUserInDB.email,
           first_name: existingUserInDB.firstName,
           last_name: existingUserInDB.lastName,
-          role: existingUserInDB.type
+          type: existingUserInDB.type
         }
         let token = middleware.createToken(payload)
         return res.status(200).send({ user: payload, token })
@@ -86,8 +86,10 @@ const getFinancialInfo = async (req, res) => {
 
 // tested and works
 const LoginAsAdmin = async (req, res) => {
+  console.log('joined login as admin')
   try {
     const { email, password } = req.body
+    console.log('email', email)
     const admin = await User.findOne({ email, type: 'admin' })
 
     if (!admin) {
@@ -99,27 +101,34 @@ const LoginAsAdmin = async (req, res) => {
         .status(401)
         .send({ status: 'error', msg: 'Invalid credentials' })
     }
-    const token = createToken({ id: admin._id, type: 'admin' })
-    res.status(200).send({ status: 'success', token })
+    let payload = {
+      id: existingUserInDB._id,
+      email: existingUserInDB.email,
+      first_name: existingUserInDB.firstName,
+      last_name: existingUserInDB.lastName,
+      type: existingUserInDB.type
+    }
+
+    const token = middleware.createToken({ payload })
+    res.status(200).send({ status: 'success', token, admin })
   } catch {
     throw error
   }
 }
 
-const AddAdminAccount = async (req, res) => {
+const SignUpAdmin = async (req, res) => {
   try {
     const { full_name, email, password } = req.body
-
-    const [firstName, lastName] = full_name.split(' ')
+    const space_index = full_name.indexOf(' ')
+    const firstName = full_name.substring(0, space_index)
+    const lastName = full_name.substring(space_index, full_name.length)
     const existing = await User.findOne({ email })
     if (existing) {
       return res
         .status(400)
         .send({ status: 'error', msg: 'email already in use' })
     }
-
     const hashedPassword = await hashPassword(password)
-
     const newAdmin = new User({
       firstName,
       lastName: lastName || '',
@@ -135,7 +144,7 @@ const AddAdminAccount = async (req, res) => {
       user: newAdmin
     })
   } catch {
-    res.status(500).send({ status: 'error', msg: error.message })
+    res.status(500).send({ status: 'error' })
   }
 }
 
@@ -144,5 +153,5 @@ module.exports = {
   Login,
   getFinancialInfo,
   LoginAsAdmin,
-  AddAdminAccount
+  SignUpAdmin
 }

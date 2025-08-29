@@ -1,5 +1,5 @@
 const Item = require('../models/Item')
-const User = require('../models/User')
+const User = require('../models/user')
 
 const updateItemStatus = async (req, res) => {
   try {
