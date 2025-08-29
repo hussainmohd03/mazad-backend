@@ -35,11 +35,13 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.id} left auction ${auctionId}`)
   })
 
+  
+
   // new bid event
-  socket.on('newBid', (data) => {
-    const { auctionId, userId, amount } = data
-    console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
-  })
+  // socket.on('newBid', (data) => {
+  //   const { auctionId, userId, amount } = data
+  //   console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
+  // })
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
@@ -49,7 +51,6 @@ io.on('connection', (socket) => {
 // db config
 const mongoose = require('./config/db')
 // mongoose()
-
 
 // set port config
 const port = process.env.PORT ? process.env.PORT : 3000
@@ -91,7 +92,7 @@ cron.schedule('* * * * *', () => {
 })
 
 // listener
-io.listen(6000)
+io.listen(5045)
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
