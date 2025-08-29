@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Auction = require('./auction')
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,6 +19,12 @@ const userSchema = new mongoose.Schema(
       default: 'user'
     },
     balance: { type: Number, default: 0 },
+    // TODO 1: add lockedAmount
+    lockedAmount: {
+      type: Number,
+      default: 0
+    },
+    // TODO 2: add lockUntil & failedLoginAttempts
     verified: { type: Boolean, default: false },
     watchList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Auction' }]
   },

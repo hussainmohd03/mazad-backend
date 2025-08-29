@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const User = require('../models/user')
 const Item = require('../models/Item')
 const middleware = require('../middleware/index')
 const { hashPassword, comparePassword, createToken } = require('../middleware')

@@ -3,7 +3,7 @@ const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const Item = require('../models/Item')
 const { io } = require('../server')
-const User = require('../models/User')
+const User = require('../models/user')
 const nowUTC = () => new Date()
 
 // create auction logic
@@ -127,8 +127,6 @@ exports.getAuctionByCategory = async (req, res) => {
   }
 }
 
-
-
 exports.placeBidding = async (req, res) => {
   try {
     const { id } = res.locals.payload
@@ -146,8 +144,27 @@ exports.placeBidding = async (req, res) => {
           const sd = new Date(auction.startDate)
           const ed = new Date(auction.endDate)
           // TODO 1: check user balance before placing a bid
+          const user = await User.findById(id)
+          const availableBalance = user.balance - user.lockedAmount
+          if (availableBalance < amount) {
+            return res.status(400).send('insufficient funds')
+          }
           if (sd <= nowUTC() < ed) {
             if (amount > auction.currentPrice + step) {
+              // TODO 2: find previous bidder
+              const previousBid = await Bidding.find({ auctionId }).sort({
+                amount: -1
+              })
+
+              // TODO 3: if there is and it's not the same user release lockedAmount
+              if (previousBid && previousBid.userId !== id) {
+                const previousBidder = await User.findById(previousBid.userId)
+                if (previousBidder) {
+                  previousBidder.lockedAmount -= previousBid.amount
+                  await previousBidder.save()
+                }
+              }
+
               const newBid = await Bidding.create({
                 auctionId: auctionId,
                 userId: id,
@@ -160,7 +177,13 @@ exports.placeBidding = async (req, res) => {
                 },
                 { new: true }
               )
-              // TODO 1: emit new bid
+
+              let extraToLock = amount - auction.currentPrice
+              // TODO 4: update user lockedAmount
+              user.lockedAmount += extraToLock
+              await user.save()
+
+              // TODO 5: emit new bid
               global.io.to(auctionId).emit('newBid', {
                 auctionId,
                 bid: newBid,
