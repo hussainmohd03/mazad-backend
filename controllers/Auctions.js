@@ -5,6 +5,7 @@ const Item = require('../models/Item')
 const { io } = require('../server')
 const User = require('../models/user')
 const nowUTC = () => new Date()
+const Autobidding = require('../models/Autobidding')
 
 // create auction logic
 exports.createAuction = async (req, res) => {
@@ -133,6 +134,7 @@ exports.placeBidding = async (req, res) => {
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
+    console.log(id)
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -192,6 +194,7 @@ exports.placeBidding = async (req, res) => {
                 currentPrice: updatedAuction.currentPrice
               })
 
+              // checkAutoBidding(auctionId, id, amount, step)
               return res.status(201).send({
                 msg: 'new bid created',
                 newBid: newBid,
@@ -207,3 +210,4 @@ exports.placeBidding = async (req, res) => {
     throw error
   }
 }
+
