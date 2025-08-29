@@ -144,8 +144,13 @@ exports.placeBidding = async (req, res) => {
           const sd = new Date(auction.startDate)
           const ed = new Date(auction.endDate)
           // TODO 1: check user balance before placing a bid
+
           if (sd <= nowUTC() < ed) {
             if (amount > auction.currentPrice + step) {
+              // TODO 2: find previous bidder 
+    
+              // TODO 3: if there is and it's not the same user release lockedAmount
+            
               const newBid = await Bidding.create({
                 auctionId: auctionId,
                 userId: id,
@@ -158,7 +163,9 @@ exports.placeBidding = async (req, res) => {
                 },
                 { new: true }
               )
-              // TODO 1: emit new bid
+
+              // TODO 4: update user lockedAmount
+              // TODO 5: emit new bid
               global.io.to(auctionId).emit('newBid', {
                 auctionId,
                 bid: newBid,
