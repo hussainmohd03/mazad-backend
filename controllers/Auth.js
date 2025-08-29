@@ -3,6 +3,7 @@ const Item = require('../models/Item')
 const middleware = require('../middleware/index')
 const { hashPassword, comparePassword, createToken } = require('../middleware')
 const Bidding = require('../models/Bidding')
+const auction = require('../models/auction')
 
 const Register = async (req, res) => {
   try {
@@ -84,7 +85,6 @@ const getFinancialInfo = async (req, res) => {
   }
 }
 
-// tested and works
 const LoginAsAdmin = async (req, res) => {
   console.log('joined login as admin')
   try {

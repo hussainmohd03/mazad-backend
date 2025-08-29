@@ -5,6 +5,47 @@ const Item = require('../models/Item')
 const { io } = require('../server')
 const User = require('../models/User')
 const nowUTC = () => new Date()
+const Autobidding = require('../models/Autobidding')
+
+const checkAutoBidding = async (auctId, id, amount, step) => {
+  console.log('enters function')
+  let currentPrice = parseInt(amount)
+  let highestBidder = id
+  let nextBidder = ''
+  let nextBid = 0
+
+  while (true) {
+    console.log('loop')
+    const autoBidders = await Autobidding.find({
+      auctionId: auctId,
+      userId: { $ne: highestBidder },
+      max_bid_amount: { $gte: currentPrice + step }
+    }).sort({ max_bid_amount: -1 })
+    console.log(autoBidders)
+
+    if (autoBidders.length === 0) {
+      break
+    }
+
+    nextBidder = autoBidders[0]
+    nextBid = Math.min(
+      autoBidders[0].max_bid_amount,
+      currentPrice + autoBidders[0].increment_amount
+    )
+
+    // will add to lockedAmount the bid that was placed rn
+
+    const newBid = await Bidding.create({
+      auctionId: auctId,
+      userId: autoBidders[0].userId,
+      amount: nextBid
+    })
+
+    currentPrice = nextBid
+    highestBidder = autoBidders[0].userId
+    console.log('next bid placed', newBid)
+  }
+}
 
 // create auction logic
 exports.createAuction = async (req, res) => {
@@ -127,14 +168,13 @@ exports.getAuctionByCategory = async (req, res) => {
   }
 }
 
-
-
 exports.placeBidding = async (req, res) => {
   try {
     const { id } = res.locals.payload
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
+    console.log(id)
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -167,6 +207,7 @@ exports.placeBidding = async (req, res) => {
                 currentPrice: updatedAuction.currentPrice
               })
 
+              checkAutoBidding(auctionId, id, amount, step)
               return res.status(201).send({
                 msg: 'new bid created',
                 newBid: newBid,
