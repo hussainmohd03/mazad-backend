@@ -64,7 +64,7 @@ const Login = async (req, res) => {
 const getFinancialInfo = async (req, res) => {
   try {
     const existingUserInDB = await User.findById(res.locals.payload.id)
-    let bidding_balance = 0
+    let bidding_balance = existingUserInDB.lockedAmount
     const biddings = await Bidding.find({
       userId: existingUserInDB._id
     }).sort({
@@ -72,12 +72,12 @@ const getFinancialInfo = async (req, res) => {
     })
     biddings.forEach((bidding) => (bidding_balance += bidding.amount))
     const user = await User.findById(existingUserInDB._id)
-    const balance = user.balance
+    const balance = user.balance 
     const used = (bidding_balance / (balance + bidding_balance)) * 100
     res.status(200).send({
       remaining: balance - bidding_balance,
       bidding_limit: bidding_balance,
-      deposit: balance + bidding_balance,
+      deposit: balance, 
       used_percentage: Math.ceil(used)
     })
   } catch (error) {
