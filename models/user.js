@@ -1,5 +1,12 @@
 const mongoose = require('mongoose')
 
+const notificationSchema = new mongoose.Schema(
+  {
+    message: { type: String, required: true }
+  },
+  { timestamps: true }
+)
+
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, trim: true, required: true },
@@ -27,7 +34,7 @@ const userSchema = new mongoose.Schema(
     // TODO 2: add lockUntil & failedLoginAttempts
     verified: { type: Boolean, default: false },
     watchList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Auction' }],
-    notifications: [{ type: String }]
+    notifications: [notificationSchema]
   },
   { timestamps: true }
 )

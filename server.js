@@ -3,12 +3,13 @@ const express = require('express')
 require('dotenv').config()
 const cors = require('cors')
 const path = require('path')
-const http = require('http')
+
 const { Server } = require('socket.io')
 const cron = require('node-cron')
 
 // initialize app
 const app = express()
+const http = require('http')
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
@@ -35,19 +36,24 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.id} left auction ${auctionId}`)
   })
 
+  socket.on('joinUser', (userId) => {
+    socket.join(userId)
+    console.log(`${userId} is in ${socket.id}`)
+  })
+
+  socket.on('leaveUser', (userId) => {
+    socket.leave(userId)
+    console.log(`bye bye ${userId}`)
+  })
+
   // new bid event
   // socket.on('newBid', (data) => {
   //   const { auctionId, userId, amount } = data
   //   console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
   // })
 
-  // update account event
-  socket.on('updateAccount', (userId)=> {
-    console.log(`user with id ${userId} has updated their account`)
-  })
-
   // emit changes in autobidding to frontend
-  
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
   })

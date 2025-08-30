@@ -1,6 +1,4 @@
 const User = require('../models/user')
-import { io } from 'socket.io-client'
-const socket = io('http://localhost:5045')
 const middleware = require('../middleware')
 
 const updatePassword = async (req, res) => {
@@ -38,6 +36,19 @@ const updatePassword = async (req, res) => {
         last_name: currentUser.lastName,
         role: currentUser.type
       }
+      let newNotification = await User.findByIdAndUpdate(
+        id,
+        {
+          $push: { notifications: { message: 'Password updated successfully.' } }
+        },
+        { new: true }
+      )
+      newNotification =
+        newNotification.notifications[newNotification.notifications.length - 1]
+          .message
+
+      global.io.to(id).emit('updatePassword', newNotification)
+      console.log('from backend', newNotification)
       return res
         .status(200)
         .send({ status: 'password updated successfully', user: payload })
@@ -53,7 +64,20 @@ const updateProfile = async (req, res) => {
       new: true
     })
     // here socket.emit
-    socket.emit('updateAccount', id)
+    let newNotification = await User.findByIdAndUpdate(
+      id,
+      {
+        $push: { notifications: { message: 'Profile updated successfully.' } }
+      },
+      { new: true }
+    )
+    newNotification =
+      newNotification.notifications[newNotification.notifications.length - 1]
+        .message
+
+    global.io.to(id).emit('updateAccount', newNotification)
+    console.log('from backend', newNotification)
+
     res
       .status(200)
       .send({ msg: 'profile successfully updated', user: updatedProfile })
