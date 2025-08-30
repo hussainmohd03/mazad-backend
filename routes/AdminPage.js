@@ -12,9 +12,9 @@ router.put(
 
 router.get(
   '/items',
-  middleware.stripToken,
-  middleware.verifyToken,
-  middleware.isAdmin,
+  // middleware.stripToken,
+  // middleware.verifyToken,
+  // middleware.isAdmin,
   controller.ListAllItems
 )
 
@@ -41,4 +41,7 @@ router.put(
   middleware.isAdmin,
   controller.updateAdminProfile
 )
+
+router.get('/allbiddings', controller.getAllBiddings)
+
 module.exports = router

@@ -119,6 +119,15 @@ const getWatchList = async (req, res) => {
   }
 }
 
+const getAllUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find({})
+    res.status(200).send(allUsers)
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   updatePassword,
   updateProfile,
@@ -126,5 +135,6 @@ module.exports = {
   deleteMyProfile,
   addToWatchList,
   removeFromWatchList,
-  getWatchList
+  getWatchList,
+  getAllUsers
 }

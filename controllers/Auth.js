@@ -3,6 +3,7 @@ const Item = require('../models/Item')
 const middleware = require('../middleware/index')
 const { hashPassword, comparePassword, createToken } = require('../middleware')
 const Bidding = require('../models/Bidding')
+const auction = require('../models/auction')
 
 const Register = async (req, res) => {
   try {
@@ -63,7 +64,7 @@ const Login = async (req, res) => {
 const getFinancialInfo = async (req, res) => {
   try {
     const existingUserInDB = await User.findById(res.locals.payload.id)
-    let bidding_balance = 0
+    let bidding_balance = existingUserInDB.lockedAmount
     const biddings = await Bidding.find({
       userId: existingUserInDB._id
     }).sort({
@@ -71,12 +72,12 @@ const getFinancialInfo = async (req, res) => {
     })
     biddings.forEach((bidding) => (bidding_balance += bidding.amount))
     const user = await User.findById(existingUserInDB._id)
-    const balance = user.balance
+    const balance = user.balance 
     const used = (bidding_balance / (balance + bidding_balance)) * 100
     res.status(200).send({
       remaining: balance - bidding_balance,
       bidding_limit: bidding_balance,
-      deposit: balance + bidding_balance,
+      deposit: balance, 
       used_percentage: Math.ceil(used)
     })
   } catch (error) {
@@ -84,7 +85,6 @@ const getFinancialInfo = async (req, res) => {
   }
 }
 
-// tested and works
 const LoginAsAdmin = async (req, res) => {
   console.log('joined login as admin')
   try {
@@ -102,16 +102,16 @@ const LoginAsAdmin = async (req, res) => {
         .send({ status: 'error', msg: 'Invalid credentials' })
     }
     let payload = {
-      id: existingUserInDB._id,
-      email: existingUserInDB.email,
-      first_name: existingUserInDB.firstName,
-      last_name: existingUserInDB.lastName,
-      type: existingUserInDB.type
+      id: admin._id,
+      email: admin.email,
+      first_name: admin.firstName,
+      last_name: admin.lastName,
+      type: admin.type
     }
 
     const token = middleware.createToken({ payload })
     res.status(200).send({ status: 'success', token, admin })
-  } catch {
+  } catch (error) {
     throw error
   }
 }
@@ -143,7 +143,7 @@ const SignUpAdmin = async (req, res) => {
       msg: 'admin created successfully',
       user: newAdmin
     })
-  } catch {
+  } catch (error) {
     res.status(500).send({ status: 'error' })
   }
 }
