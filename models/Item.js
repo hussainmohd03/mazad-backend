@@ -32,6 +32,7 @@ const itemSchema = new mongoose.Schema(
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending'
     },
+    // TODO 1: add weight
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -41,7 +42,6 @@ const itemSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
 
 // exported for use in seeder & frontend
 // const Item = mongoose.model('Item', itemSchema)

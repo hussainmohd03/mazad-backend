@@ -1,3 +1,4 @@
+const auction = require('../models/auction')
 const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
@@ -51,6 +52,12 @@ const checkAuctions = async () => {
       })
     }
   }
+  // TODO 5: emit only ongoing auctions
+  const ongoingAuctions = await Auction.find({ status: 'ongoing' }).populate(
+    'itemId'
+  )
+
+  global.io.emit('updateAuctions', { ongoing: ongoingAuctions })
 }
 
 module.exports = checkAuctions
