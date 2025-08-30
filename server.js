@@ -89,6 +89,11 @@ cron.schedule('* * * * *', () => {
   checkAuctions()
 })
 
+const makeAutoBidding = require('./jobs/autoBidding')
+cron.schedule('30 * * * * *', () => {
+  console.log('running autobidding')
+  makeAutoBidding()
+})
 // listener
 io.listen(5045)
 app.listen(port, () => {
