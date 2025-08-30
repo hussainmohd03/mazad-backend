@@ -183,6 +183,8 @@ exports.placeBidding = async (req, res) => {
                 { new: true }
               )
 
+              // notif here for outbid 
+
               // TODO 4: update user lockedAmount
               user.lockedAmount += amount
               await user.save()

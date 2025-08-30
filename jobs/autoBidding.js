@@ -22,7 +22,7 @@ const makeAutoBidding = async () => {
     console.log('autobidders', autoBidders)
     const nextBid = Math.min(
       autoBidders[0].max_bid_amount,
-      highestBidder[0].amount + 20
+      highestBidder[0].amount + autoBidders[0].increment_amount
     )
     const user = await User.findById(autoBidders[0].userId)
     if (
