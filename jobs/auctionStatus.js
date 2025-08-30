@@ -1,3 +1,4 @@
+const auction = require('../models/auction')
 const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
@@ -32,6 +33,8 @@ const checkAuctions = async () => {
     // TODO 6:  user Balance
     if (highest_bid) {
       const highest_bidder = await User.findById(highest_bid.userId)
+      console.log(highest_bidder)
+      console.log(highest_bid.userId)
       // TODO 6.1: check user balance
       if (highest_bidder.balance >= auction.currentPrice) {
         // TODO 6.2 : if sufficient reduce balance
@@ -50,6 +53,12 @@ const checkAuctions = async () => {
       })
     }
   }
+  // TODO 5: emit only ongoing auctions
+  const ongoingAuctions = await Auction.find({ status: 'ongoing' }).populate(
+    'itemId'
+  )
+
+  global.io.emit('updateAuctions', { ongoing: ongoingAuctions })
 }
 
 module.exports = checkAuctions

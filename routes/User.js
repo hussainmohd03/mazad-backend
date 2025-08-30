@@ -51,4 +51,6 @@ router.get(
   controller.getWatchList
 )
 
+router.get('/allusers', controller.getAllUsers)
+
 module.exports = router

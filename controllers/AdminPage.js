@@ -1,5 +1,6 @@
 const Item = require('../models/Item')
 const User = require('../models/user')
+const Bidding = require('../models/Bidding')
 
 const updateItemStatus = async (req, res) => {
   try {
@@ -67,10 +68,20 @@ const updateAdminProfile = async (req, res) => {
   } catch (error) {}
 }
 
+const getAllBiddings = async (req, res) => {
+  try {
+    const allBidding = await Bidding.find()
+    res.status(200).send(allBidding)
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   updateItemStatus,
   ListAllItems,
   getAllAdmins,
   deleteAdmin,
-  updateAdminProfile
+  updateAdminProfile,
+  getAllBiddings
 }

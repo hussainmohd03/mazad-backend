@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema(
       default: 0
     },
     // TODO 2: add lockUntil & failedLoginAttempts
+    // TODO 3: address
     verified: { type: Boolean, default: false },
     // when auction status changes to closed send notifs
     watchList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Auction' }],
