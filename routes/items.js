@@ -1,11 +1,12 @@
 const controller = require('../controllers/Items')
 const router = require('express').Router()
 const middleware = require('../middleware/index')
-
+const upload = require('../middleware/imagesUpload')
 router.post(
   '',
   middleware.stripToken,
   middleware.verifyToken,
+  upload.array('images', 4),
   controller.createItem
 )
 
