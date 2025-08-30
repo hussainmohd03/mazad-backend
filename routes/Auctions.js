@@ -31,8 +31,8 @@ router.get(
 
 router.post(
   '/:id/bids',
-  // middleware.stripToken,
-  // middleware.verifyToken,
+  middleware.stripToken,
+  middleware.verifyToken,
   controller.placeBidding
 )
 module.exports = router

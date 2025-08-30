@@ -187,18 +187,21 @@ exports.placeBidding = async (req, res) => {
               user.lockedAmount += amount
               await user.save()
 
+              const newBidCount = await Bidding.countDocuments({ auctionId })
               // TODO 5: emit new bid
               global.io.to(auctionId).emit('newBid', {
                 auctionId,
                 bid: newBid,
-                currentPrice: updatedAuction.currentPrice
+                currentPrice: updatedAuction.currentPrice,
+                bidCount: newBidCount
               })
 
               // checkAutoBidding(auctionId, id, amount, step)
               return res.status(201).send({
                 msg: 'new bid created',
                 newBid: newBid,
-                updatedAuction: updatedAuction
+                updatedAuction: updatedAuction,
+                bidCount: newBidCount
               })
             }
             return res.status(404).send({ msg: 'amount invalid' })
