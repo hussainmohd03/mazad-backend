@@ -41,6 +41,13 @@ io.on('connection', (socket) => {
   //   console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
   // })
 
+  // update account event
+  socket.on('updateAccount', (userId)=> {
+    console.log(`user with id ${userId} has updated their account`)
+  })
+
+  // emit changes in autobidding to frontend
+  
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
   })
@@ -89,11 +96,11 @@ cron.schedule('* * * * *', () => {
   checkAuctions()
 })
 
-const makeAutoBidding = require('./jobs/autoBidding')
-cron.schedule('30 * * * * *', () => {
-  console.log('running autobidding')
-  makeAutoBidding()
-})
+// const makeAutoBidding = require('./jobs/autoBidding')
+// cron.schedule('30 * * * * *', () => {
+//   console.log('running autobidding')
+//   makeAutoBidding()
+// })
 // listener
 io.listen(5045)
 app.listen(port, () => {

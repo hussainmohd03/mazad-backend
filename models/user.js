@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema(
     },
     // TODO 2: add lockUntil & failedLoginAttempts
     verified: { type: Boolean, default: false },
-    watchList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Auction' }]
+    watchList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Auction' }],
+    notifications: [{ type: String }]
   },
   { timestamps: true }
 )

@@ -1,5 +1,6 @@
 const User = require('../models/user')
-
+import { io } from 'socket.io-client'
+const socket = io('http://localhost:5045')
 const middleware = require('../middleware')
 
 const updatePassword = async (req, res) => {
@@ -51,6 +52,8 @@ const updateProfile = async (req, res) => {
     const updatedProfile = await User.findByIdAndUpdate(id, req.body, {
       new: true
     })
+    // here socket.emit
+    socket.emit('updateAccount', id)
     res
       .status(200)
       .send({ msg: 'profile successfully updated', user: updatedProfile })
