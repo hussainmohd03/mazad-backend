@@ -14,10 +14,12 @@ router.get(
 
 router.post(
   '/admin/login',
-  middleware.stripToken,
-  middleware.verifyToken,
+  // middleware.stripToken,
+  // middleware.verifyToken,
   controller.LoginAsAdmin
 )
+
+router.post('/admin/signup', controller.SignUpAdmin)
 
 router.get(
   '/session',

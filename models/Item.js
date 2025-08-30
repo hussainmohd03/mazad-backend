@@ -42,7 +42,6 @@ const itemSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-
 // exported for use in seeder & frontend
 // const Item = mongoose.model('Item', itemSchema)
 // module.exports = { Item, CATEGORIES }

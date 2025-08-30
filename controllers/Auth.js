@@ -102,16 +102,16 @@ const LoginAsAdmin = async (req, res) => {
         .send({ status: 'error', msg: 'Invalid credentials' })
     }
     let payload = {
-      id: existingUserInDB._id,
-      email: existingUserInDB.email,
-      first_name: existingUserInDB.firstName,
-      last_name: existingUserInDB.lastName,
-      type: existingUserInDB.type
+      id: admin._id,
+      email: admin.email,
+      first_name: admin.firstName,
+      last_name: admin.lastName,
+      type: admin.type
     }
 
     const token = middleware.createToken({ payload })
     res.status(200).send({ status: 'success', token, admin })
-  } catch {
+  } catch (error) {
     throw error
   }
 }
@@ -143,7 +143,7 @@ const SignUpAdmin = async (req, res) => {
       msg: 'admin created successfully',
       user: newAdmin
     })
-  } catch {
+  } catch (error) {
     res.status(500).send({ status: 'error' })
   }
 }
