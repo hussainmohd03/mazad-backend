@@ -14,8 +14,8 @@ router.get(
 
 router.post(
   '/admin/login',
-  middleware.stripToken,
-  middleware.verifyToken,
+  // middleware.stripToken,
+  // middleware.verifyToken,
   controller.LoginAsAdmin
 )
 
