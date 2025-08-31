@@ -39,7 +39,9 @@ const makeAutoBidding = async () => {
     if (auctions[i].status === 'ongoing') {
       if (
         user.balance >
-        user.lockedAmount + highestBidder[0].amount + autoBidders[0].increment_amount
+        user.lockedAmount +
+          highestBidder[0].amount +
+          autoBidders[0].increment_amount
       ) {
         const sd = new Date(auctions[i].startDate)
         const ed = new Date(auctions[i].endDate)

@@ -72,12 +72,12 @@ const getFinancialInfo = async (req, res) => {
     })
     biddings.forEach((bidding) => (bidding_balance += bidding.amount))
     const user = await User.findById(existingUserInDB._id)
-    const balance = user.balance 
+    const balance = user.balance
     const used = (bidding_balance / (balance + bidding_balance)) * 100
     res.status(200).send({
       remaining: balance - bidding_balance,
       bidding_limit: bidding_balance,
-      deposit: balance, 
+      deposit: balance,
       used_percentage: Math.ceil(used)
     })
   } catch (error) {
@@ -116,42 +116,9 @@ const LoginAsAdmin = async (req, res) => {
   }
 }
 
-const SignUpAdmin = async (req, res) => {
-  try {
-    const { full_name, email, password } = req.body
-    const space_index = full_name.indexOf(' ')
-    const firstName = full_name.substring(0, space_index)
-    const lastName = full_name.substring(space_index, full_name.length)
-    const existing = await User.findOne({ email })
-    if (existing) {
-      return res
-        .status(400)
-        .send({ status: 'error', msg: 'email already in use' })
-    }
-    const hashedPassword = await hashPassword(password)
-    const newAdmin = new User({
-      firstName,
-      lastName: lastName || '',
-      email,
-      passwordHash: hashedPassword,
-      type: 'admin'
-    })
-
-    await newAdmin.save()
-    res.status(201).send({
-      status: 'success',
-      msg: 'admin created successfully',
-      user: newAdmin
-    })
-  } catch (error) {
-    res.status(500).send({ status: 'error' })
-  }
-}
-
 module.exports = {
   Register,
   Login,
   getFinancialInfo,
-  LoginAsAdmin,
-  SignUpAdmin
+  LoginAsAdmin
 }

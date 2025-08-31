@@ -30,6 +30,34 @@ router.delete(
   controller.deleteMyProfile
 );
 
-router.get("/allusers", controller.getAllUsers);
+router.put(
+  '/me/watchlist/:auctionId',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.addToWatchList
+)
+
+router.put(
+  '/me/watchlist/:auctionId',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.removeFromWatchList
+)
+
+router.get(
+  '/me/watchlist',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getWatchList
+)
+
+router.get(
+  '/allusers',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
+  controller.getAllUsers
+)
+
 
 module.exports = router;
