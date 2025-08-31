@@ -37,12 +37,12 @@ const updatePassword = async (req, res) => {
         last_name: currentUser.lastName,
         role: currentUser.type
       }
+
+      // here socket.emit
       let newNotification = await User.findByIdAndUpdate(
         id,
         {
-          $push: {
-            notifications: { message: 'Password updated successfully.' }
-          }
+          $push: { notifications: { message: 'Profile updated successfully.' } }
         },
         { new: true }
       )
@@ -50,40 +50,13 @@ const updatePassword = async (req, res) => {
         newNotification.notifications[newNotification.notifications.length - 1]
           .message
 
-      global.io.to(id).emit('updatePassword', newNotification)
+      global.io.to(id).emit('updateAccount', newNotification)
       console.log('from backend', newNotification)
-      return res
+
+      res
         .status(200)
-        .send({ status: 'password updated successfully', user: payload })
+        .send({ msg: 'profile successfully updated', user: updatedProfile })
     }
-    res.status(401).send({ status: 'error', msg: 'update password failed' })
-  } catch (error) {}
-}
-
-const updateProfile = async (req, res) => {
-  try {
-    const { id } = res.locals.payload
-    const updatedProfile = await User.findByIdAndUpdate(id, req.body, {
-      new: true
-    })
-    // here socket.emit
-    let newNotification = await User.findByIdAndUpdate(
-      id,
-      {
-        $push: { notifications: { message: 'Profile updated successfully.' } }
-      },
-      { new: true }
-    )
-    newNotification =
-      newNotification.notifications[newNotification.notifications.length - 1]
-        .message
-
-    global.io.to(id).emit('updateAccount', newNotification)
-    console.log('from backend', newNotification)
-
-    res
-      .status(200)
-      .send({ msg: 'profile successfully updated', user: updatedProfile })
   } catch (error) {
     throw error
   }
@@ -114,51 +87,6 @@ const deleteMyProfile = async (req, res) => {
   } catch (error) {}
 }
 
-const addToWatchList = async (req, res) => {
-  try {
-    const { id } = res.locals.payload
-    const addedItem = await User.findByIdAndUpdate(
-      id,
-      { $push: { watchList: req.params.auctionId } },
-      { new: true }
-    )
-    res.send(addedItem)
-  } catch (error) {
-    throw error
-  }
-}
-
-const removeFromWatchList = async (req, res) => {
-  try {
-    const { id } = res.locals.payload
-    const removedItem = await User.findByIdAndUpdate(
-      id,
-      { $pull: { watchList: req.params.auctionId } },
-      { new: true }
-    )
-
-    res.status(200).send({ removedItem })
-  } catch (error) {
-    throw error
-  }
-}
-
-const getWatchList = async (req, res) => {
-  try {
-    const { id } = res.locals.payload
-    const currentUser = await User.findById(id).populate('watchList')
-    let ongoingAuctions = []
-    currentUser.watchList.forEach((auction) => {
-      if (auction.status === 'ongoing') {
-        ongoingAuctions.push(auction)
-      }
-    })
-    res.status(200).send(ongoingAuctions)
-  } catch (error) {
-    throw error
-  }
-}
-
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find({})
@@ -173,8 +101,5 @@ module.exports = {
   updateProfile,
   getMyProfileById,
   deleteMyProfile,
-  addToWatchList,
-  removeFromWatchList,
-  getWatchList,
   getAllUsers
 }

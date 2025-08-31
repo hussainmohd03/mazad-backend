@@ -12,14 +12,7 @@ router.get(
   controller.getFinancialInfo
 )
 
-router.post(
-  '/admin/login',
-  // middleware.stripToken,
-  // middleware.verifyToken,
-  controller.LoginAsAdmin
-)
-
-router.post('/admin/signup', controller.SignUpAdmin)
+router.post('/admin/login', controller.LoginAsAdmin)
 
 router.get(
   '/session',
