@@ -1,6 +1,6 @@
 const User = require('../models/user')
-
 const middleware = require('../middleware')
+
 
 const updatePassword = async (req, res) => {
   try {
