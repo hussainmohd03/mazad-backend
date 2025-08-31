@@ -4,8 +4,10 @@ const middleware = require('../middleware')
 
 const createItem = async (req, res) => {
   try {
-    req.body.ownerId = res.locals.payload.id
-    const createdItem = await Item.create(req.body)
+    console.log(req.body)
+    const ownerId = res.locals.payload.id
+    const images = req.files.map(file => file.path)
+    const createdItem = await Item.create({ ...req.body, ownerId, images })
     res.send(createdItem)
   } catch (error) {
     throw error
