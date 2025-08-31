@@ -9,6 +9,13 @@ router.post(
   controller.createAuction
 )
 
+router.post(
+  '/autobid',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.createAutoBidding
+)
+
 router.get(
   '/category',
   middleware.stripToken,

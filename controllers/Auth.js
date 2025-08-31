@@ -72,12 +72,12 @@ const getFinancialInfo = async (req, res) => {
     })
     biddings.forEach((bidding) => (bidding_balance += bidding.amount))
     const user = await User.findById(existingUserInDB._id)
-    const balance = user.balance 
+    const balance = user.balance
     const used = (bidding_balance / (balance + bidding_balance)) * 100
     res.status(200).send({
       remaining: balance - bidding_balance,
       bidding_limit: bidding_balance,
-      deposit: balance, 
+      deposit: balance,
       used_percentage: Math.ceil(used)
     })
   } catch (error) {
@@ -108,9 +108,10 @@ const LoginAsAdmin = async (req, res) => {
       last_name: admin.lastName,
       type: admin.type
     }
-
-    const token = middleware.createToken({ payload })
-    res.status(200).send({ status: 'success', token, admin })
+    console.log(payload)
+    const token = await middleware.createToken({ payload })
+    console.log(token)
+    res.status(200).send({ status: 'success', token, payload })
   } catch (error) {
     throw error
   }
