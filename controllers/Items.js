@@ -64,10 +64,21 @@ const updateItem = async (req, res) => {
   }
 }
 
+const getApprovedItems = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const approvedItems = await Item.find({ ownerId: id, status: 'approved' })
+    res.status(200).send({ msg: 'success', item: approvedItems })
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   createItem,
   getItemDetails,
   deleteItem,
   getSellerItems,
-  updateItem
+  updateItem,
+  getApprovedItems
 }
