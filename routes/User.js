@@ -30,27 +30,6 @@ router.delete(
   controller.deleteMyProfile
 );
 
-router.put(
-  '/me/watchlist/:auctionId',
-  middleware.stripToken,
-  middleware.verifyToken,
-  controller.addToWatchList
-)
-
-router.put(
-  '/me/watchlist/:auctionId',
-  middleware.stripToken,
-  middleware.verifyToken,
-  controller.removeFromWatchList
-)
-
-router.get(
-  '/me/watchlist',
-  middleware.stripToken,
-  middleware.verifyToken,
-  controller.getWatchList
-)
-
 router.get(
   '/allusers',
   middleware.stripToken,
