@@ -32,26 +32,33 @@ const checkAuctions = async () => {
     const watchlist = await Watchlist.find({ auctionId: auction._id }).populate(
       ['userId', 'auctionId']
     )
-
-    for (let i = 0; i < watchlist.length; i++) {
-      newNotfication = await User.findByIdAndUpdate(
-        watchlist[i].userId,
-        {
-          $push: {
-            notifications: {
-              message: `${watchlist.auctionId.name} has been sold.`
+    console.log(watchlist)
+    if (watchlist.length !== 0) {
+      for (let i = 0; i < watchlist.length; i++) {
+        newNotfication = await User.findByIdAndUpdate(
+          watchlist[i].userId,
+          {
+            $push: {
+              notifications: {
+                message: `${watchlist[i].auctionId._id} has been sold.`
+              }
             }
-          }
-        },
-        { new: true }
-      )
-      newNotfication =
-        newNotfication.notifications[newNotfication.notifications.length - 1]
-          .message
-      global.io.to(watchlist[i].userId).emit('removedItem', newNotfication)
-      console.log('from job', newNotfication)
-    }
+          },
+          { new: true }
+        )
 
+        newNotfication =
+          newNotfication.notifications[newNotfication.notifications.length - 1]
+            .message
+        console.log(watchlist[i].userId._id.toString())
+        global.io
+          .to(watchlist[i].userId._id.toString())
+          .emit('removedItem', newNotfication)
+        console.log('from job', newNotfication)
+        console.log(watchlist[i].userId._id)
+      }
+    }
+    await auction.save()
     //TODO 4:  get highest bid and set winningBidID,
     const highest_bid = await Bidding.findOne({ auctionId: auction._id }).sort({
       amount: -1
@@ -69,7 +76,6 @@ const checkAuctions = async () => {
       }
       // TODO 7: Trigger transaction
       auction.winningBid = highest_bid._id
-      await auction.save()
       await highest_bidder.save()
       await Transaction.create({
         sellerId: auction.ownerId,

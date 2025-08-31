@@ -175,6 +175,58 @@ exports.placeBidding = async (req, res) => {
                 userId: id,
                 amount: amount
               })
+              const findBid = await Bidding.findById(newBid._id).populate([
+                'userId',
+                'auctionId'
+              ])
+              if (id !== findBid.userId._id.toString()) {
+                let newNotfication = await User.findByIdAndUpdate(
+                  newBid.userId,
+                  {
+                    $push: {
+                      notifications: {
+                        message: `You've been outbid by ${findBid.userId.firstName}.`
+                      }
+                    }
+                  },
+                  { new: true }
+                )
+
+                newNotfication =
+                  newNotfication.notifications[
+                    newNotfication.notifications.length - 1
+                  ].message
+                // connect to frontend
+                global.io
+                  .to(newBid.userId._id.toString())
+                  .emit('outBid', newNotfication)
+                console.log('from job', newNotfication)
+                console.log(newBid.userId._id)
+              } else {
+                let newNotfication = await User.findByIdAndUpdate(
+                  newBid.userId,
+                  {
+                    $push: {
+                      notifications: {
+                        message: `Bid placed successfully.`
+                      }
+                    }
+                  },
+                  { new: true }
+                )
+
+                newNotfication =
+                  newNotfication.notifications[
+                    newNotfication.notifications.length - 1
+                  ].message
+                // connect to frontend
+                console.log(newBid.userId._id.toString())
+                global.io
+                  .to(newBid.userId._id.toString())
+                  .emit('outBid', newNotfication)
+                console.log('from job', newNotfication)
+                console.log(newBid.userId._id)
+              }
               const updatedAuction = await Auction.findByIdAndUpdate(
                 auctionId,
                 {
@@ -183,7 +235,7 @@ exports.placeBidding = async (req, res) => {
                 { new: true }
               )
 
-              // notif here for outbid 
+              // notif here for outbid
 
               // TODO 4: update user lockedAmount
               user.lockedAmount += amount
@@ -215,4 +267,3 @@ exports.placeBidding = async (req, res) => {
     throw error
   }
 }
-
