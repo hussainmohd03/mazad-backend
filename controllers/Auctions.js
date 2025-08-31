@@ -272,3 +272,34 @@ exports.placeBidding = async (req, res) => {
     throw error
   }
 }
+
+exports.createAutoBidding = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const { auctionId, increment_amount, max_bid_amount } = req.body
+
+    if (!auctionId || !increment_amount || !max_bid_amount) {
+      return res.status(400).send({ msg: 'Missing fields' })
+    }
+
+    // Prevent duplicate autobidding for same user/auction
+    const exists = await Autobidding.findOne({ auctionId, userId: id })
+    if (exists) {
+      return res
+        .status(409)
+        .send({ msg: 'Autobidding already set for this auction' })
+    }
+
+    const autobid = await Autobidding.create({
+      auctionId,
+      userId: id,
+      increment_amount,
+      max_bid_amount
+    })
+
+    return res.status(201).send(autobid)
+  } catch (error) {
+    throw error
+  }
+}
+
