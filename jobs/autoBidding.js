@@ -34,6 +34,24 @@ const makeAutoBidding = async () => {
       if (previousBidder) {
         previousBidder.lockedAmount -= highestBidder[0].amount
         await previousBidder.save()
+        let newNotfication = await User.findByIdAndUpdate(
+          newBidding.userId,
+          {
+            $push: {
+              notifications: {
+                message: `You've been outbid on auction #${auctions[i]._id}.`
+              }
+            }
+          },
+          { new: true }
+        )
+
+        newNotfication =
+          newNotfication.notifications[newNotfication.notifications.length - 1]
+            .message
+        global.io
+          .to(previousBidder[1]._id.toString())
+          .emit('notify', newNotfication)
       }
     }
     if (auctions[i].status === 'ongoing') {
@@ -51,7 +69,27 @@ const makeAutoBidding = async () => {
             userId: autoBidders[0].userId,
             amount: highestBidder[0].amount + 20
           })
+          
           console.log('new bidding', newBidding)
+          let newNotfication = await User.findByIdAndUpdate(
+            newBidding.userId,
+            {
+              $push: {
+                notifications: {
+                  message: `Autobidding placed on auction #${auctions[i]._id}  @ BHD${newBidding.amount}.`
+                }
+              }
+            },
+            { new: true }
+          )
+
+          newNotfication =
+            newNotfication.notifications[
+              newNotfication.notifications.length - 1
+            ].message
+          global.io
+            .to(newBidding.userId.toString())
+            .emit('notify', newNotfication)
         }
       }
     }

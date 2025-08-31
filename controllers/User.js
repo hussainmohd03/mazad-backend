@@ -48,7 +48,7 @@ const updatePassword = async (req, res) => {
         newNotification.notifications[newNotification.notifications.length - 1]
           .message
 
-      global.io.to(id).emit('updatePassword', newNotification)
+      global.io.to(id).emit('notify', newNotification)
       console.log('from backend', newNotification)
       return res
         .status(200)
@@ -76,7 +76,7 @@ const updateProfile = async (req, res) => {
       newNotification.notifications[newNotification.notifications.length - 1]
         .message
 
-    global.io.to(id).emit('updateAccount', newNotification)
+    global.io.to(id).emit('notify', newNotification)
     console.log('from backend', newNotification)
 
     res
@@ -110,41 +110,6 @@ const deleteMyProfile = async (req, res) => {
 
     res.status(200).send({ msg: 'profile deleted successfully' })
   } catch (error) {}
-}
-
-const addToWatchList = async (req, res) => {
-  try {
-    const addedItem = await User.findByIdAndUpdate(
-      req.body.id,
-      { $push: { watchList: req.params.auctionId } },
-      { new: true }
-    )
-  } catch (error) {
-    throw error
-  }
-}
-
-const removeFromWatchList = async (req, res) => {
-  try {
-    const removedItem = await User.findByIdAndUpdate(
-      req.body.id,
-      { $pull: { watchList: req.params.auctionId } },
-      { new: true }
-    )
-
-    res.status(200).send({ removedItem })
-  } catch (error) {
-    throw error
-  }
-}
-
-const getWatchList = async (req, res) => {
-  try {
-    const currentUser = await User.findById(req.body.id).populate('watchList')
-    res.status(200).send(currentUser.watchList)
-  } catch (error) {
-    throw error
-  }
 }
 
 const getAllUsers = async (req, res) => {

@@ -28,11 +28,10 @@ const checkAuctions = async () => {
 
   for (let auction of expired) {
     auction.status = 'closed'
-    console.log(auction)
     const watchlist = await Watchlist.find({ auctionId: auction._id }).populate(
       ['userId', 'auctionId']
     )
-    console.log(watchlist)
+
     if (watchlist.length !== 0) {
       for (let i = 0; i < watchlist.length; i++) {
         newNotfication = await User.findByIdAndUpdate(
@@ -50,25 +49,27 @@ const checkAuctions = async () => {
         newNotfication =
           newNotfication.notifications[newNotfication.notifications.length - 1]
             .message
-        console.log(watchlist[i].userId._id.toString())
+        // console.log(watchlist[i].userId._id.toString())
         global.io
           .to(watchlist[i].userId._id.toString())
-          .emit('removedItem', newNotfication)
+          .emit('notify', newNotfication)
         console.log('from job', newNotfication)
-        console.log(watchlist[i].userId._id)
+        // console.log(watchlist[i].userId._id)
+
+        // update watchlist entity by removing the records with auctions that have been closed
+        await Watchlist.findByIdAndDelete(watchlist[i]._id.toString())
       }
     }
-    await auction.save()
+
     //TODO 4:  get highest bid and set winningBidID,
     const highest_bid = await Bidding.findOne({ auctionId: auction._id }).sort({
       amount: -1
     })
-
     // TODO 6:  user Balance
     if (highest_bid) {
       const highest_bidder = await User.findById(highest_bid.userId)
-      console.log(highest_bidder)
-      console.log(highest_bid.userId)
+      // console.log(highest_bidder)
+      // console.log(highest_bid.userId)
       // TODO 6.1: check user balance
       if (highest_bidder.balance >= auction.currentPrice) {
         // TODO 6.2 : if sufficient reduce balance
@@ -76,14 +77,33 @@ const checkAuctions = async () => {
       }
       // TODO 7: Trigger transaction
       auction.winningBid = highest_bid._id
+      await auction.save()
       await highest_bidder.save()
-      await Transaction.create({
+      let newNotfication = await User.findByIdAndUpdate(
+        highest_bid.userId,
+        {
+          $push: {
+            notifications: {
+              message: `You won the auction #${auction._id}`
+            }
+          }
+        },
+        { new: true }
+      )
+
+      newNotfication =
+        newNotfication.notifications[newNotfication.notifications.length - 1]
+          .message
+      global.io.to(highest_bid.userId.toString()).emit('notify', newNotfication)
+
+      const trasnaction = await Transaction.create({
         sellerId: auction.ownerId,
         buyerId: highest_bid.userId,
         price: highest_bid.amount,
         itemId: auction.itemId,
         date: nowUTC()
       })
+      console.log('trasnaction', trasnaction)
     }
   }
   // TODO 5: emit only ongoing auctions

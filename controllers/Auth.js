@@ -76,7 +76,7 @@ const getFinancialInfo = async (req, res) => {
     const used = (bidding_balance / (balance + bidding_balance)) * 100
     let remaining = 0
     if (balance > 0) {
-      remaining = balance - bidding_balance
+      remaining = parseInt(balance) - parseInt(bidding_balance)
     }
     res.status(200).send({
       remaining: remaining,
