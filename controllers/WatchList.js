@@ -2,6 +2,7 @@ const WatchList = require("../models/WatchList");
 
 const addToWatchList = async (req, res) => {
   try {
+    console.log("something");
     const addedWatchList = await WatchList.create({
       auctionId: req.body.auctionId,
       userId: res.locals.payload.id,
@@ -30,6 +31,7 @@ const getWatchList = async (req, res) => {
     const usersWatchList = await WatchList.find({
       userId: res.locals.payload.id,
     }).populate("auctionId");
+    console.log(usersWatchList);
     res.status(200).send(usersWatchList);
   } catch (error) {
     throw error;
