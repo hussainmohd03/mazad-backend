@@ -3,9 +3,12 @@ const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const User = require('../models/user')
+const Watchlist = require('../models/Watchlist')
+
 const nowUTC = () => new Date()
 
 const checkAuctions = async () => {
+  let newNotfication = ''
   //TODO 1: Get all upcoming auctions with startData <= now and change their status to ongoing
   const upcoming = await Auction.find({
     status: 'upcoming',
@@ -22,8 +25,32 @@ const checkAuctions = async () => {
     status: 'ongoing',
     endDate: { $lte: nowUTC() }
   })
+
   for (let auction of expired) {
     auction.status = 'closed'
+    console.log(auction)
+    const watchlist = await Watchlist.find({ auctionId: auction._id }).populate(
+      ['userId', 'auctionId']
+    )
+
+    for (let i = 0; i < watchlist.length; i++) {
+      newNotfication = await User.findByIdAndUpdate(
+        watchlist[i].userId,
+        {
+          $push: {
+            notifications: {
+              message: `${watchlist.auctionId.name} has been sold.`
+            }
+          }
+        },
+        { new: true }
+      )
+      newNotfication =
+        newNotfication.notifications[newNotfication.notifications.length - 1]
+          .message
+      global.io.to(watchlist[i].userId).emit('removedItem', newNotfication)
+      console.log('from job', newNotfication)
+    }
 
     //TODO 4:  get highest bid and set winningBidID,
     const highest_bid = await Bidding.findOne({ auctionId: auction._id }).sort({

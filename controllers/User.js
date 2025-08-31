@@ -1,6 +1,6 @@
 const User = require('../models/user')
 const middleware = require('../middleware')
-
+const Watchlist = require('../models/Watchlist')
 
 const updatePassword = async (req, res) => {
   try {
@@ -40,7 +40,9 @@ const updatePassword = async (req, res) => {
       let newNotification = await User.findByIdAndUpdate(
         id,
         {
-          $push: { notifications: { message: 'Password updated successfully.' } }
+          $push: {
+            notifications: { message: 'Password updated successfully.' }
+          }
         },
         { new: true }
       )
@@ -114,11 +116,13 @@ const deleteMyProfile = async (req, res) => {
 
 const addToWatchList = async (req, res) => {
   try {
+    const { id } = res.locals.payload
     const addedItem = await User.findByIdAndUpdate(
-      req.body.id,
+      id,
       { $push: { watchList: req.params.auctionId } },
       { new: true }
     )
+    res.send(addedItem)
   } catch (error) {
     throw error
   }
@@ -126,8 +130,9 @@ const addToWatchList = async (req, res) => {
 
 const removeFromWatchList = async (req, res) => {
   try {
+    const { id } = res.locals.payload
     const removedItem = await User.findByIdAndUpdate(
-      req.body.id,
+      id,
       { $pull: { watchList: req.params.auctionId } },
       { new: true }
     )
@@ -140,8 +145,15 @@ const removeFromWatchList = async (req, res) => {
 
 const getWatchList = async (req, res) => {
   try {
-    const currentUser = await User.findById(req.body.id).populate('watchList')
-    res.status(200).send(currentUser.watchList)
+    const { id } = res.locals.payload
+    const currentUser = await User.findById(id).populate('watchList')
+    let ongoingAuctions = []
+    currentUser.watchList.forEach((auction) => {
+      if (auction.status === 'ongoing') {
+        ongoingAuctions.push(auction)
+      }
+    })
+    res.status(200).send(ongoingAuctions)
   } catch (error) {
     throw error
   }
