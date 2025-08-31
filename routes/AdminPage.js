@@ -42,6 +42,12 @@ router.put(
   controller.updateAdminProfile
 )
 
-router.get('/allbiddings', controller.getAllBiddings)
+router.get(
+  '/allbiddings',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
+  controller.getAllBiddings
+)
 
 module.exports = router

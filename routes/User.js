@@ -51,6 +51,12 @@ router.get(
   controller.getWatchList
 )
 
-router.get('/allusers', controller.getAllUsers)
+router.get(
+  '/allusers',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
+  controller.getAllUsers
+)
 
 module.exports = router

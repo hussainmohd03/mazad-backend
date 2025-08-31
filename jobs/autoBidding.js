@@ -5,59 +5,58 @@ const Auction = require('../models/auction')
 const nowUTC = () => new Date()
 
 const makeAutoBidding = async () => {
-//   console.log('getting auctions')
-//   const auctions = await Auction.find({ status: 'ongoing' })
-//   for (let i = 0; i < auctions.length; i++) {
-//     const highestBidder = await Bidding.find({ auctionId: auctions[i] }).sort({
-//       createdAt: -1
-//     })
-//     const autoBidders = await Autobidding.find({
-//       auctionId: auctions[i]._id,
-//       userId: { $ne: highestBidder[0].userId },
-//       max_bid_amount: {
-//         $gte: highestBidder[0].amount + 20
-//       }
-//     }).sort({ max_bid_amount: -1 })
-
-//     console.log('autobidders', autoBidders)
-//     const nextBid = Math.min(
-//       autoBidders[0].max_bid_amount,
-//       highestBidder[0].amount + 20
-//     )
-//     const user = await User.findById(autoBidders[0].userId)
-//     if (
-//       highestBidder.length !== 0 &&
-//       highestBidder[0].userId !== autoBidders[0].userId
-//     ) {
-//       console.log(highestBidder[0])
-//       const previousBidder = await User.findById(highestBidder[0].userId)
-//       if (previousBidder) {
-//         previousBidder.lockedAmount -= highestBidder[0].amount
-//         await previousBidder.save()
-//       }
-//     }
-//     if (auctions[i].status === 'ongoing') {
-//       if (
-//         user.balance >
-//         user.lockedAmount +
-//           highestBidder[0].amount +
-//           autoBidders[0].increment_amount
-//       ) {
-//         const sd = new Date(auctions[i].startDate)
-//         const ed = new Date(auctions[i].endDate)
-//         if (sd <= nowUTC() < ed) {
-//           const newBidding = await Bidding.create({
-//             auctionId: auctions[i],
-//             userId: autoBidders[0].userId,
-//             amount: highestBidder[0].amount + 20
-//           })
-//           console.log('new bidding', newBidding)
-//         }
-//       }
-//     }
-//     user.lockedAmount += nextBid
-//     await user.save()
-//   }
+  //   console.log('getting auctions')
+  //   const auctions = await Auction.find({ status: 'ongoing' })
+  //   for (let i = 0; i < auctions.length; i++) {
+  //     const highestBidder = await Bidding.find({ auctionId: auctions[i] }).sort({
+  //       createdAt: -1
+  //     })
+  //     const autoBidders = await Autobidding.find({
+  //       auctionId: auctions[i]._id,
+  //       userId: { $ne: highestBidder[0].userId },
+  //       max_bid_amount: {
+  //         $gte: highestBidder[0].amount + 20
+  //       }
+  //     }).sort({ max_bid_amount: -1 })
+  //     console.log('autobidders', autoBidders)
+  //     const nextBid = Math.min(
+  //       autoBidders[0].max_bid_amount,
+  //       highestBidder[0].amount + 20
+  //     )
+  //     const user = await User.findById(autoBidders[0].userId)
+  //     if (
+  //       highestBidder.length !== 0 &&
+  //       highestBidder[0].userId !== autoBidders[0].userId
+  //     ) {
+  //       console.log(highestBidder[0])
+  //       const previousBidder = await User.findById(highestBidder[0].userId)
+  //       if (previousBidder) {
+  //         previousBidder.lockedAmount -= highestBidder[0].amount
+  //         await previousBidder.save()
+  //       }
+  //     }
+  //     if (auctions[i].status === 'ongoing') {
+  //       if (
+  //         user.balance >
+  //         user.lockedAmount +
+  //           highestBidder[0].amount +
+  //           autoBidders[0].increment_amount
+  //       ) {
+  //         const sd = new Date(auctions[i].startDate)
+  //         const ed = new Date(auctions[i].endDate)
+  //         if (sd <= nowUTC() < ed) {
+  //           const newBidding = await Bidding.create({
+  //             auctionId: auctions[i],
+  //             userId: autoBidders[0].userId,
+  //             amount: highestBidder[0].amount + 20
+  //           })
+  //           console.log('new bidding', newBidding)
+  //         }
+  //       }
+  //     }
+  //     user.lockedAmount += nextBid
+  //     await user.save()
+  //   }
 }
 
 module.exports = makeAutoBidding
