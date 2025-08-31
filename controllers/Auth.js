@@ -108,9 +108,10 @@ const LoginAsAdmin = async (req, res) => {
       last_name: admin.lastName,
       type: admin.type
     }
-
-    const token = middleware.createToken({ payload })
-    res.status(200).send({ status: 'success', token, admin })
+    console.log(payload)
+    const token = await middleware.createToken({ payload })
+    console.log(token)
+    res.status(200).send({ status: 'success', token, payload })
   } catch (error) {
     throw error
   }
