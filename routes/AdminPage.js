@@ -12,9 +12,9 @@ router.put(
 
 router.get(
   '/items',
-  // middleware.stripToken,
-  // middleware.verifyToken,
-  // middleware.isAdmin,
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
   controller.ListAllItems
 )
 
