@@ -1,6 +1,6 @@
 const User = require('../models/user')
 const middleware = require('../middleware')
-
+const Transactions = require('../models/Transaction')
 
 const updatePassword = async (req, res) => {
   try {
@@ -121,10 +121,26 @@ const getAllUsers = async (req, res) => {
   }
 }
 
+const getTransactions = async (req, res) => {
+  try {
+    const transactions = await Transactions.find({
+      buyerId: res.locals.payload.id
+    })
+      .sort({
+        createdAt: -1
+      })
+      .populate(['itemId', 'sellerId', 'buyerId'])
+
+    res.status(200).send(transactions)
+  } catch (error) {
+    throw error
+  }
+}
 module.exports = {
   updatePassword,
   updateProfile,
   getMyProfileById,
   deleteMyProfile,
-  getAllUsers
+  getAllUsers,
+  getTransactions
 }

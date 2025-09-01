@@ -21,7 +21,14 @@ router.get(
   middleware.stripToken,
   middleware.verifyToken,
   controller.getMyProfileById
-);
+)
+router.get(
+  '/me/transactions',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getTransactions
+)
+
 
 router.delete(
   "/me",
@@ -39,4 +46,4 @@ router.get(
 )
 
 
-module.exports = router;
+module.exports = router
