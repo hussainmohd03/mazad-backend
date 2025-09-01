@@ -4,7 +4,6 @@ const Transactions = require('../models/Transaction')
 
 const updatePassword = async (req, res) => {
   try {
-    console.log('enters update password controller from backend')
     const { id } = res.locals.payload
     const { old_password, new_password } = req.body
     let currentUser = await User.findById(id)
@@ -21,9 +20,7 @@ const updatePassword = async (req, res) => {
     )
 
     if (matched) {
-      console.log('inside matched')
       const passwordHash = await middleware.hashPassword(new_password)
-      console.log('hashing new pass')
       currentUser = await User.findByIdAndUpdate(
         id,
         { passwordHash: passwordHash },
@@ -40,7 +37,9 @@ const updatePassword = async (req, res) => {
       let newNotification = await User.findByIdAndUpdate(
         id,
         {
-          $push: { notifications: { message: 'Password updated successfully.' } }
+          $push: {
+            notifications: { message: 'Password updated successfully.' }
+          }
         },
         { new: true }
       )
@@ -49,7 +48,6 @@ const updatePassword = async (req, res) => {
           .message
 
       global.io.to(id).emit('notify', newNotification)
-      console.log('from backend', newNotification)
       return res
         .status(200)
         .send({ status: 'password updated successfully', user: payload })
@@ -77,7 +75,6 @@ const updateProfile = async (req, res) => {
         .message
 
     global.io.to(id).emit('notify', newNotification)
-    console.log('from backend', newNotification)
 
     res
       .status(200)

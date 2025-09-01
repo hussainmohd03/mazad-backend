@@ -54,7 +54,6 @@ const checkSession = async (req, res) => {
 }
 
 const isAdmin = async (req, res, next) => {
-  console.log('is in is admin')
   const { payload } = res.locals
   try {
     if (payload.payload.type === 'admin') {
