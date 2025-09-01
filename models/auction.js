@@ -1,25 +1,19 @@
 const mongoose = require('mongoose')
 
 const CATEGORIES = [
-  'heavy-machinery',
-  'art',
-  'pearls',
-  'jewellery',
-  'gold',
-  'electronics',
-  'industrial',
-  'watches',
-  'bags',
   'properties',
-  'scrap',
-  'boats',
+  'car-plates',
+  'taxi-plates',
+  'general items',
+  'vehichles',
   'machinery',
-  'vehicles',
-  'general-items',
-  'court-properties',
-  'car-plates'
+  'industrial',
+  'boats',
+  'electronics',
+  'furniture',
+  'jewelry',
+  'scrap-&-metal'
 ]
-
 const auctionSchema = new mongoose.Schema(
   {
     itemId: {

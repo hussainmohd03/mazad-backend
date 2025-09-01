@@ -150,9 +150,7 @@ exports.placeBidding = async (req, res) => {
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
-
     let newBid = {}
-
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -242,7 +240,6 @@ exports.placeBidding = async (req, res) => {
                 global.io
                   .to(newBid.userId._id.toString())
                   .emit('notify', newNotfication)
-
               }
               let newNotfication = await User.findByIdAndUpdate(
                 newBid.userId,
@@ -275,7 +272,6 @@ exports.placeBidding = async (req, res) => {
               },
               { new: true }
             )
-            
             // TODO 4: update user lockedAmount
             user.lockedAmount += parseInt(amount)
             await user.save()
@@ -331,6 +327,16 @@ exports.createAutoBidding = async (req, res) => {
     })
 
     return res.status(201).send(autobid)
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.getSellerAuctions = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const items = await Auction.find({ ownerId: id }).populate('itemId')
+    return res.status(201).send({ message: 'success', items })
   } catch (error) {
     throw error
   }
