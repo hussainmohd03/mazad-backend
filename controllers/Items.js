@@ -4,9 +4,10 @@ const middleware = require('../middleware')
 
 const createItem = async (req, res) => {
   try {
-    console.log(req.body)
     const ownerId = res.locals.payload.id
+
     const images = req.files.map(file => file.savedPath)
+
     const createdItem = await Item.create({ ...req.body, ownerId, images })
     res.send(createdItem)
   } catch (error) {
@@ -50,7 +51,6 @@ const updateItem = async (req, res) => {
   try {
     const { id } = res.locals.payload
     const item = await Item.findById(req.params.id)
-    console.log('item', item._id)
     if (item.ownerId.toString() === id && item.status === 'pending') {
       const updatedItem = await Item.findByIdAndUpdate(item._id, req.body, {
         new: true
@@ -64,10 +64,21 @@ const updateItem = async (req, res) => {
   }
 }
 
+const getApprovedItems = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const approvedItems = await Item.find({ ownerId: id, status: 'approved' })
+    res.status(200).send({ msg: 'success', item: approvedItems })
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   createItem,
   getItemDetails,
   deleteItem,
   getSellerItems,
-  updateItem
+  updateItem,
+  getApprovedItems
 }

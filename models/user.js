@@ -1,5 +1,12 @@
 const mongoose = require('mongoose')
 
+const notificationSchema = new mongoose.Schema(
+  {
+    message: { type: String, required: true }
+  },
+  { timestamps: true }
+)
+
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, trim: true, required: true },
@@ -27,7 +34,9 @@ const userSchema = new mongoose.Schema(
     // TODO 2: add lockUntil & failedLoginAttempts
     // TODO 3: address
     verified: { type: Boolean, default: false },
-    watchList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Auction' }]
+    // when auction status changes to closed send notifs
+    watchList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Auction' }],
+    notifications: [notificationSchema]
   },
   { timestamps: true }
 )

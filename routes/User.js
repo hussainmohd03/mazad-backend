@@ -21,7 +21,14 @@ router.get(
   middleware.stripToken,
   middleware.verifyToken,
   controller.getMyProfileById
-);
+)
+router.get(
+  '/me/transactions',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getTransactions
+)
+
 
 router.delete(
   "/me",
@@ -30,6 +37,13 @@ router.delete(
   controller.deleteMyProfile
 );
 
-router.get("/allusers", controller.getAllUsers);
+router.get(
+  '/allusers',
+  middleware.stripToken,
+  middleware.verifyToken,
+  middleware.isAdmin,
+  controller.getAllUsers
+)
 
-module.exports = router;
+
+module.exports = router

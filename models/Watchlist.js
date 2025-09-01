@@ -8,4 +8,4 @@ const watchlistSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-module.exports = mongoose.model('WatchList', watchlistSchema)
+module.exports = mongoose.model('Watchlist', watchlistSchema) 

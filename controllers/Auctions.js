@@ -121,8 +121,24 @@ exports.getAuctionByCategory = async (req, res) => {
     const auctions = await Auction.find({ category: name })
       .sort({ createdAt: -1 })
       .populate('itemId')
-
     res.status(200).send(auctions)
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.getCategoryCount = async (req, res) => {
+  try {
+    const categoryCount = await Auction.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          totalQuantity: { $sum: 1 }
+        }
+      }
+    ])
+
+    res.status(200).send(categoryCount)
   } catch (error) {
     throw error
   }
@@ -134,7 +150,9 @@ exports.placeBidding = async (req, res) => {
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
-    console.log(id)
+
+    let newBid = {}
+
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -160,7 +178,6 @@ exports.placeBidding = async (req, res) => {
 
               // TODO 3: if there is and it's not the same user release lockedAmount
               if (previousBid.length !== 0 && previousBid[0].userId !== id) {
-                console.log(previousBid[0])
                 const previousBidder = await User.findById(
                   previousBid[0].userId
                 )
@@ -170,42 +187,117 @@ exports.placeBidding = async (req, res) => {
                 }
               }
 
-              const newBid = await Bidding.create({
+              newBid = await Bidding.create({
                 auctionId: auctionId,
                 userId: id,
                 amount: amount
               })
-              const updatedAuction = await Auction.findByIdAndUpdate(
-                auctionId,
+              const findBid = await Bidding.findById(newBid._id).populate([
+                'userId',
+                'auctionId'
+              ])
+
+              if (
+                previousBid.length !== 0 &&
+                previousBid[0].userId.toString() !== id
+              ) {
+                let newNotfication = await User.findByIdAndUpdate(
+                  newBid.userId,
+                  {
+                    $push: {
+                      notifications: {
+                        message: `You've been outbid on auction #${findBid.auctionId._id.toString()}.`
+                      }
+                    }
+                  },
+                  { new: true }
+                )
+
+                newNotfication =
+                  newNotfication.notifications[
+                    newNotfication.notifications.length - 1
+                  ].message
+                // connect to frontend
+                global.io
+                  .to(previousBid[0].userId.toString())
+                  .emit('notify', newNotfication)
+              } else {
+                let newNotfication = await User.findByIdAndUpdate(
+                  newBid.userId,
+                  {
+                    $push: {
+                      notifications: {
+                        message: `Bid placed successfully.`
+                      }
+                    }
+                  },
+                  { new: true }
+                )
+
+                newNotfication =
+                  newNotfication.notifications[
+                    newNotfication.notifications.length - 1
+                  ].message
+                // connect to frontend
+                global.io
+                  .to(newBid.userId._id.toString())
+                  .emit('notify', newNotfication)
+
+              }
+              let newNotfication = await User.findByIdAndUpdate(
+                newBid.userId,
                 {
-                  currentPrice: amount
+                  $push: {
+                    notifications: {
+                      message: `Bid placed successfully.`
+                    }
+                  }
                 },
                 { new: true }
               )
 
-              // TODO 4: update user lockedAmount
-              user.lockedAmount += amount
-              await user.save()
-
-              const newBidCount = await Bidding.countDocuments({ auctionId })
-              // TODO 5: emit new bid
-              global.io.to(auctionId).emit('newBid', {
-                auctionId,
-                bid: newBid,
-                currentPrice: updatedAuction.currentPrice,
-                bidCount: newBidCount
-              })
-
-              // checkAutoBidding(auctionId, id, amount, step)
-              return res.status(201).send({
-                msg: 'new bid created',
-                newBid: newBid,
-                updatedAuction: updatedAuction,
-                bidCount: newBidCount
-              })
+              newNotfication =
+                newNotfication.notifications[
+                  newNotfication.notifications.length - 1
+                ].message
+              // connect to frontend
+              console.log(newBid.userId._id.toString())
+              global.io
+                .to(newBid.userId._id.toString())
+                .emit('notify', newNotfication)
+              console.log('from job', newNotfication)
+              console.log(newBid.userId._id)
             }
-            return res.status(404).send({ msg: 'amount invalid' })
+            const updatedAuction = await Auction.findByIdAndUpdate(
+              auctionId,
+              {
+                currentPrice: amount
+              },
+              { new: true }
+            )
+            
+            // TODO 4: update user lockedAmount
+            user.lockedAmount += parseInt(amount)
+            await user.save()
+
+            const newBidCount = await Bidding.countDocuments({ auctionId })
+            // TODO 5: emit new bid
+            global.io.to(auctionId).emit('newBid', {
+              auctionId,
+              bid: newBid,
+              currentPrice: updatedAuction.currentPrice,
+              bidCount: newBidCount
+            })
+
+            // checkAutoBidding(auctionId, id, amount, step)
+            return res.status(201).send({
+              msg: 'new bid created',
+              newBid: newBid,
+              updatedAuction: updatedAuction,
+              bidCount: newBidCount
+            })
           }
+          return res.status(404).send({ msg: 'amount invalid' })
         }
       }
     }
@@ -214,3 +306,32 @@ exports.placeBidding = async (req, res) => {
   }
 }
 
+exports.createAutoBidding = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const { auctionId, increment_amount, max_bid_amount } = req.body
+
+    if (!auctionId || !increment_amount || !max_bid_amount) {
+      return res.status(400).send({ msg: 'Missing fields' })
+    }
+
+    // Prevent duplicate autobidding for same user/auction
+    const exists = await Autobidding.findOne({ auctionId, userId: id })
+    if (exists) {
+      return res
+        .status(409)
+        .send({ msg: 'Autobidding already set for this auction' })
+    }
+
+    const autobid = await Autobidding.create({
+      auctionId,
+      userId: id,
+      increment_amount,
+      max_bid_amount
+    })
+
+    return res.status(201).send(autobid)
+  } catch (error) {
+    throw error
+  }
+}
