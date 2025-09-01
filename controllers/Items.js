@@ -6,7 +6,7 @@ const createItem = async (req, res) => {
   try {
     console.log(req.body)
     const ownerId = res.locals.payload.id
-    const images = req.files.map(file => file.path)
+    const images = req.files.map((file) => file.path)
     const createdItem = await Item.create({ ...req.body, ownerId, images })
     res.send(createdItem)
   } catch (error) {
@@ -64,10 +64,21 @@ const updateItem = async (req, res) => {
   }
 }
 
+const getApprovedItems = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const approvedItems = await Item.find({ ownerId: id, status: 'approved' })
+    res.status(200).send({ msg: 'success', item: approvedItems })
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   createItem,
   getItemDetails,
   deleteItem,
   getSellerItems,
-  updateItem
+  updateItem,
+  getApprovedItems
 }

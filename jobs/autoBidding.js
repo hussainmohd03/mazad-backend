@@ -22,7 +22,7 @@ const makeAutoBidding = async () => {
     console.log('autobidders', autoBidders)
     const nextBid = Math.min(
       autoBidders[0].max_bid_amount,
-      highestBidder[0].amount + 20
+      highestBidder[0].amount + autoBidders[0].increment_amount
     )
     const user = await User.findById(autoBidders[0].userId)
     if (
@@ -34,12 +34,32 @@ const makeAutoBidding = async () => {
       if (previousBidder) {
         previousBidder.lockedAmount -= highestBidder[0].amount
         await previousBidder.save()
+        let newNotfication = await User.findByIdAndUpdate(
+          newBidding.userId,
+          {
+            $push: {
+              notifications: {
+                message: `You've been outbid on auction #${auctions[i]._id}.`
+              }
+            }
+          },
+          { new: true }
+        )
+
+        newNotfication =
+          newNotfication.notifications[newNotfication.notifications.length - 1]
+            .message
+        global.io
+          .to(previousBidder[1]._id.toString())
+          .emit('notify', newNotfication)
       }
     }
     if (auctions[i].status === 'ongoing') {
       if (
         user.balance >
-        user.lockedAmount + highestBidder[0].amount + autoBidders[0].increment_amount
+        user.lockedAmount +
+          highestBidder[0].amount +
+          autoBidders[0].increment_amount
       ) {
         const sd = new Date(auctions[i].startDate)
         const ed = new Date(auctions[i].endDate)
@@ -49,7 +69,27 @@ const makeAutoBidding = async () => {
             userId: autoBidders[0].userId,
             amount: highestBidder[0].amount + 20
           })
+          
           console.log('new bidding', newBidding)
+          let newNotfication = await User.findByIdAndUpdate(
+            newBidding.userId,
+            {
+              $push: {
+                notifications: {
+                  message: `Autobidding placed on auction #${auctions[i]._id}  @ BHD${newBidding.amount}.`
+                }
+              }
+            },
+            { new: true }
+          )
+
+          newNotfication =
+            newNotfication.notifications[
+              newNotfication.notifications.length - 1
+            ].message
+          global.io
+            .to(newBidding.userId.toString())
+            .emit('notify', newNotfication)
         }
       }
     }
