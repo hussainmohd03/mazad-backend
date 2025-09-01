@@ -1,4 +1,5 @@
-const WatchList = require("../models/WatchList");
+const WatchList = require('../models/Watchlist')
+
 
 const addToWatchList = async (req, res) => {
   try {
