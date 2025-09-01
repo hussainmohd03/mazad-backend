@@ -22,6 +22,12 @@ router.get(
   middleware.verifyToken,
   controller.getMyProfileById
 )
+router.get(
+  '/me/transactions',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getTransactions
+)
 
 router.delete(
   '/me',
