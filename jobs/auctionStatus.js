@@ -11,12 +11,10 @@ const checkAuctions = async () => {
     status: 'upcoming',
     startDate: { $lte: nowUTC() }
   })
-
   for (let auction of upcoming) {
     auction.status = 'ongoing'
     await auction.save()
   }
-
   //TODO 3: get all ongoing auctions with endDate <= now and change their status to closed,
   const expired = await Auction.find({
     status: 'ongoing',
@@ -24,12 +22,10 @@ const checkAuctions = async () => {
   })
   for (let auction of expired) {
     auction.status = 'closed'
-
     //TODO 4:  get highest bid and set winningBidID,
     const highest_bid = await Bidding.findOne({ auctionId: auction._id }).sort({
       amount: -1
     })
-
     // TODO 6:  user Balance
     if (highest_bid) {
       const highest_bidder = await User.findById(highest_bid.userId)
@@ -57,7 +53,6 @@ const checkAuctions = async () => {
   const ongoingAuctions = await Auction.find({ status: 'ongoing' }).populate(
     'itemId'
   )
-
   global.io.emit('updateAuctions', { ongoing: ongoingAuctions })
 }
 

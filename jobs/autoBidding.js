@@ -18,7 +18,6 @@ const makeAutoBidding = async () => {
         $gte: highestBidder[0].amount + 20
       }
     }).sort({ max_bid_amount: -1 })
-
     console.log('autobidders', autoBidders)
     const nextBid = Math.min(
       autoBidders[0].max_bid_amount,
