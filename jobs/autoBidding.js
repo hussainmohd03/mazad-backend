@@ -35,7 +35,7 @@ const makeAutoBidding = async () => {
         previousBidder.lockedAmount -= highestBidder[0].amount
         await previousBidder.save()
         let newNotfication = await User.findByIdAndUpdate(
-          newBidding.userId,
+          previousBidder.userId,
           {
             $push: {
               notifications: {
@@ -69,6 +69,18 @@ const makeAutoBidding = async () => {
             userId: autoBidders[0].userId,
             amount: highestBidder[0].amount + 20
           })
+
+          const updatedAuction = await Auction.findByIdAndUpdate(auctions[i], {
+            currentPrice: newBidding.amount
+          })
+          const newBidCount = await Bidding.countDocuments(auctions[i])
+
+          global.io.to(auctions[i]).emit('newBid', {
+            auctionId: auctions[i],
+            bid: newBidding,
+            currentPrice: updatedAuction.currentPrice,
+            bidCount: newBidCount
+          })
           
           console.log('new bidding', newBidding)
           let newNotfication = await User.findByIdAndUpdate(
@@ -82,7 +94,6 @@ const makeAutoBidding = async () => {
             },
             { new: true }
           )
-
           newNotfication =
             newNotfication.notifications[
               newNotfication.notifications.length - 1
