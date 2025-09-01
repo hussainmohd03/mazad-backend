@@ -128,6 +128,17 @@ exports.getAuctionByCategory = async (req, res) => {
   }
 }
 
+exports.getCategoryCount = async (req, res) => {
+  try {
+    const categoryCount = await Auction.find()
+
+    res.status(200).send()
+  } catch (error) {
+    throw error
+  }
+}
+
+
 exports.placeBidding = async (req, res) => {
   try {
     const { id } = res.locals.payload
