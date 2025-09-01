@@ -1,35 +1,26 @@
-const controller = require("../controllers/User");
+const controller = require("../controllers/WatchList");
 const router = require("express").Router();
 const middleware = require("../middleware/index");
 
 router.put(
-  "/me/password",
+  "/me/add/:auctionId",
   middleware.stripToken,
   middleware.verifyToken,
-  controller.updatePassword
+  controller.addToWatchList
 );
 
 router.put(
-  "/me",
+  "/me/remove/:auctionId",
   middleware.stripToken,
   middleware.verifyToken,
-  controller.updateProfile
+  controller.removeFromWatchList
 );
 
 router.get(
   "/me",
   middleware.stripToken,
   middleware.verifyToken,
-  controller.getMyProfileById
+  controller.getWatchList
 );
-
-router.delete(
-  "/me",
-  middleware.stripToken,
-  middleware.verifyToken,
-  controller.deleteMyProfile
-);
-
-router.get("/allusers", controller.getAllUsers);
 
 module.exports = router;

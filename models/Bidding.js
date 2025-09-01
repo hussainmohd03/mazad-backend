@@ -14,7 +14,7 @@ const bidSchema = new mongoose.Schema(
     },
     amount: { type: Number, required: true, min: 0 }
   },
-  { timestamps: { createdAt: true, updatedAt: false } }
+  { timestamps: true }
 )
 
 module.exports = mongoose.model('Bidding', bidSchema)

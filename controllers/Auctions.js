@@ -5,6 +5,7 @@ const Item = require('../models/Item')
 const { io } = require('../server')
 const User = require('../models/user')
 const nowUTC = () => new Date()
+const Autobidding = require('../models/Autobidding')
 
 // create auction logic
 exports.createAuction = async (req, res) => {
@@ -133,6 +134,7 @@ exports.placeBidding = async (req, res) => {
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
+    console.log(id)
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -185,17 +187,21 @@ exports.placeBidding = async (req, res) => {
               user.lockedAmount += amount
               await user.save()
 
+              const newBidCount = await Bidding.countDocuments({ auctionId })
               // TODO 5: emit new bid
               global.io.to(auctionId).emit('newBid', {
                 auctionId,
                 bid: newBid,
-                currentPrice: updatedAuction.currentPrice
+                currentPrice: updatedAuction.currentPrice,
+                bidCount: newBidCount
               })
 
+              // checkAutoBidding(auctionId, id, amount, step)
               return res.status(201).send({
                 msg: 'new bid created',
                 newBid: newBid,
-                updatedAuction: updatedAuction
+                updatedAuction: updatedAuction,
+                bidCount: newBidCount
               })
             }
             return res.status(404).send({ msg: 'amount invalid' })
@@ -207,3 +213,4 @@ exports.placeBidding = async (req, res) => {
     throw error
   }
 }
+
