@@ -150,7 +150,7 @@ exports.placeBidding = async (req, res) => {
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
-    console.log(id)
+    let newBid = {}
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -186,7 +186,7 @@ exports.placeBidding = async (req, res) => {
                 }
               }
 
-              const newBid = await Bidding.create({
+              newBid = await Bidding.create({
                 auctionId: auctionId,
                 userId: id,
                 amount: amount
@@ -223,64 +223,61 @@ exports.placeBidding = async (req, res) => {
                   .to(previousBid[0].userId.toString())
                   .emit('notify', newNotfication)
                 // console.log(newBid.userId._id)
-              } else {
-                let newNotfication = await User.findByIdAndUpdate(
-                  newBid.userId,
-                  {
-                    $push: {
-                      notifications: {
-                        message: `Bid placed successfully.`
-                      }
-                    }
-                  },
-                  { new: true }
-                )
-
-                newNotfication =
-                  newNotfication.notifications[
-                    newNotfication.notifications.length - 1
-                  ].message
-                // connect to frontend
-                console.log(newBid.userId._id.toString())
-                global.io
-                  .to(newBid.userId._id.toString())
-                  .emit('notify', newNotfication)
-                console.log('from job', newNotfication)
-                console.log(newBid.userId._id)
               }
-              const updatedAuction = await Auction.findByIdAndUpdate(
-                auctionId,
+              let newNotfication = await User.findByIdAndUpdate(
+                newBid.userId,
                 {
-                  currentPrice: amount
+                  $push: {
+                    notifications: {
+                      message: `Bid placed successfully.`
+                    }
+                  }
                 },
                 { new: true }
               )
 
-              // notif here for outbid
-
-              // TODO 4: update user lockedAmount
-              user.lockedAmount += parseInt(amount)
-              await user.save()
-
-              const newBidCount = await Bidding.countDocuments({ auctionId })
-              // TODO 5: emit new bid
-              global.io.to(auctionId).emit('newBid', {
-                auctionId,
-                bid: newBid,
-                currentPrice: updatedAuction.currentPrice,
-                bidCount: newBidCount
-              })
-
-              // checkAutoBidding(auctionId, id, amount, step)
-              return res.status(201).send({
-                msg: 'new bid created',
-                newBid: newBid,
-                updatedAuction: updatedAuction,
-                bidCount: newBidCount
-              })
+              newNotfication =
+                newNotfication.notifications[
+                  newNotfication.notifications.length - 1
+                ].message
+              // connect to frontend
+              console.log(newBid.userId._id.toString())
+              global.io
+                .to(newBid.userId._id.toString())
+                .emit('notify', newNotfication)
+              console.log('from job', newNotfication)
+              console.log(newBid.userId._id)
             }
-            return res.status(404).send({ msg: 'amount invalid' })
+            const updatedAuction = await Auction.findByIdAndUpdate(
+              auctionId,
+              {
+                currentPrice: amount
+              },
+              { new: true }
+            )
+            
+            // TODO 4: update user lockedAmount
+            user.lockedAmount += parseInt(amount)
+            await user.save()
+
+            const newBidCount = await Bidding.countDocuments({ auctionId })
+            // TODO 5: emit new bid
+            global.io.to(auctionId).emit('newBid', {
+              auctionId,
+              bid: newBid,
+              currentPrice: updatedAuction.currentPrice,
+              bidCount: newBidCount
+            })
+
+            // checkAutoBidding(auctionId, id, amount, step)
+            return res.status(201).send({
+              msg: 'new bid created',
+              newBid: newBid,
+              updatedAuction: updatedAuction,
+              bidCount: newBidCount
+            })
           }
+          return res.status(404).send({ msg: 'amount invalid' })
         }
       }
     }
