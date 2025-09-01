@@ -39,7 +39,7 @@ const checkAuctions = async () => {
           {
             $push: {
               notifications: {
-                message: `${watchlist[i].auctionId._id} has been sold.`
+                message: `#${watchlist[i].auctionId._id} has been sold.`
               }
             }
           },
