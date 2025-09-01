@@ -71,7 +71,7 @@ const getFinancialInfo = async (req, res) => {
     biddings.forEach((bidding) => (bidding_balance += bidding.amount))
     const user = await User.findById(existingUserInDB._id)
     const balance = user.balance
-    const used = (bidding_balance / (balance + bidding_balance)) * 100
+    const used = (bidding_balance / balance) * 100
     let remaining = 0
     if (balance > 0) {
       remaining = parseInt(balance) - parseInt(bidding_balance)
@@ -80,7 +80,7 @@ const getFinancialInfo = async (req, res) => {
       remaining: remaining,
       bidding_limit: bidding_balance,
       deposit: balance,
-      used_percentage: Math.ceil(used)
+      used_percentage: Math.floor(used)
     })
   } catch (error) {
     throw error

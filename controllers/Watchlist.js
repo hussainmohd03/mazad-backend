@@ -1,47 +1,46 @@
-const watchList = require('../models/Watchlist')
+const WatchList = require('../models/Watchlist')
 
-// get approved items
 
 const addToWatchList = async (req, res) => {
   try {
-    const addedWatchList = await watchList.create({
-      auctionId: req.params.auctionId,
-      userId: res.locals.payload.id
-    })
-    res.status(200).send({ addedWatchList })
+    console.log("something");
+    const addedWatchList = await WatchList.create({
+      auctionId: req.body.auctionId,
+      userId: res.locals.payload.id,
+    });
+    res.status(200).send({ addedWatchList });
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 const removeFromWatchList = async (req, res) => {
   try {
-    const removedItem = await watchList.findOneAndDelete({
+    const removedItem = await WatchList.findOneAndDelete({
       auctionId: req.params.auctionId,
-      userId: res.locals.payload.id
-    })
+      userId: res.locals.payload.id,
+    });
 
-    res.status(200).send({ removedItem })
+    res.status(200).send({ removedItem });
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 const getWatchList = async (req, res) => {
   try {
-    const usersWatchList = await watchList
-      .find({
-        userId: res.locals.payload.id
-      })
-      .populate('auctionId')
-    res.status(200).send(usersWatchList)
+    const usersWatchList = await WatchList.find({
+      userId: res.locals.payload.id,
+    }).populate("auctionId");
+    console.log(usersWatchList);
+    res.status(200).send(usersWatchList);
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 module.exports = {
   addToWatchList,
   removeFromWatchList,
-  getWatchList
-}
+  getWatchList,
+};
