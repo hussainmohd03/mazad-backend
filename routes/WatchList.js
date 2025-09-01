@@ -3,14 +3,14 @@ const router = require("express").Router();
 const middleware = require("../middleware/index");
 
 router.put(
-  "/me/:auctionId",
+  "/me/add/:auctionId",
   middleware.stripToken,
   middleware.verifyToken,
   controller.addToWatchList
 );
 
 router.put(
-  "/me/:auctionId",
+  "/me/remove/:auctionId",
   middleware.stripToken,
   middleware.verifyToken,
   controller.removeFromWatchList
