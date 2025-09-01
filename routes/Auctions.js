@@ -9,6 +9,12 @@ router.post(
   controller.createAuction
 )
 
+router.get(
+  '/me',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getSellerAuctions
+)
 router.post(
   '/autobid',
   middleware.stripToken,
@@ -49,4 +55,5 @@ router.post(
   middleware.verifyToken,
   controller.placeBidding
 )
+
 module.exports = router

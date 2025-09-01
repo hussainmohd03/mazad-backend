@@ -255,7 +255,7 @@ exports.placeBidding = async (req, res) => {
               },
               { new: true }
             )
-            
+
             // TODO 4: update user lockedAmount
             user.lockedAmount += parseInt(amount)
             await user.save()
@@ -311,6 +311,16 @@ exports.createAutoBidding = async (req, res) => {
     })
 
     return res.status(201).send(autobid)
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.getSellerAuctions = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const items = await Auction.find({ ownerId: id }).populate('itemId')
+    return res.status(201).send({ message: 'success', items })
   } catch (error) {
     throw error
   }
