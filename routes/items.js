@@ -10,6 +10,13 @@ router.post(
   controller.createItem
 )
 
+
+router.get(
+  '/approved',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getApprovedItems
+)
 router.get(
   '/:id',
   middleware.stripToken,

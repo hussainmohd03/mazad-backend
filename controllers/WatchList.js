@@ -1,0 +1,45 @@
+const WatchList = require("../models/WatchList");
+
+const addToWatchList = async (req, res) => {
+  try {
+    console.log("something");
+    const addedWatchList = await WatchList.create({
+      auctionId: req.body.auctionId,
+      userId: res.locals.payload.id,
+    });
+    res.status(200).send({ addedWatchList });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const removeFromWatchList = async (req, res) => {
+  try {
+    const removedItem = await WatchList.findOneAndDelete({
+      auctionId: req.params.auctionId,
+      userId: res.locals.payload.id,
+    });
+
+    res.status(200).send({ removedItem });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getWatchList = async (req, res) => {
+  try {
+    const usersWatchList = await WatchList.find({
+      userId: res.locals.payload.id,
+    }).populate("auctionId");
+    console.log(usersWatchList);
+    res.status(200).send(usersWatchList);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = {
+  addToWatchList,
+  removeFromWatchList,
+  getWatchList,
+};

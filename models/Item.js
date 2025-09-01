@@ -1,23 +1,18 @@
 const mongoose = require('mongoose')
 
 const CATEGORIES = [
-  'heavy-machinery',
-  'art',
-  'pearls',
-  'jewellery',
-  'gold',
-  'electronics',
-  'industrial',
-  'watches',
-  'bags',
   'properties',
-  'scrap',
-  'boats',
+  'car-plates',
+  'taxi-plates',
+  'general items',
+  'vehichles',
   'machinery',
-  'vehicles',
-  'general-items',
-  'court-properties',
-  'car-plates'
+  'industrial',
+  'boats',
+  'electronics',
+  'furniture',
+  'jewelry',
+  'scrap-&-metal'
 ]
 
 const itemSchema = new mongoose.Schema(
@@ -29,7 +24,7 @@ const itemSchema = new mongoose.Schema(
     images: [{ type: String }],
     status: {
       type: String,
-      enum: ['pending', 'approved', 'rejected'],
+      enum: ['pending', 'approved', 'listed', 'rejected'],
       default: 'pending'
     },
     // TODO 1: add weight

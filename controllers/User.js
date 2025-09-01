@@ -1,6 +1,6 @@
 const User = require('../models/user')
 const middleware = require('../middleware')
-
+const Transactions = require('../models/Transaction')
 
 const updatePassword = async (req, res) => {
   try {
@@ -37,6 +37,19 @@ const updatePassword = async (req, res) => {
         last_name: currentUser.lastName,
         role: currentUser.type
       }
+      let newNotification = await User.findByIdAndUpdate(
+        id,
+        {
+          $push: { notifications: { message: 'Password updated successfully.' } }
+        },
+        { new: true }
+      )
+      newNotification =
+        newNotification.notifications[newNotification.notifications.length - 1]
+          .message
+
+      global.io.to(id).emit('notify', newNotification)
+      console.log('from backend', newNotification)
       return res
         .status(200)
         .send({ status: 'password updated successfully', user: payload })
@@ -51,6 +64,21 @@ const updateProfile = async (req, res) => {
     const updatedProfile = await User.findByIdAndUpdate(id, req.body, {
       new: true
     })
+    // here socket.emit
+    let newNotification = await User.findByIdAndUpdate(
+      id,
+      {
+        $push: { notifications: { message: 'Profile updated successfully.' } }
+      },
+      { new: true }
+    )
+    newNotification =
+      newNotification.notifications[newNotification.notifications.length - 1]
+        .message
+
+    global.io.to(id).emit('notify', newNotification)
+    console.log('from backend', newNotification)
+
     res
       .status(200)
       .send({ msg: 'profile successfully updated', user: updatedProfile })
@@ -84,41 +112,6 @@ const deleteMyProfile = async (req, res) => {
   } catch (error) {}
 }
 
-const addToWatchList = async (req, res) => {
-  try {
-    const addedItem = await User.findByIdAndUpdate(
-      req.body.id,
-      { $push: { watchList: req.params.auctionId } },
-      { new: true }
-    )
-  } catch (error) {
-    throw error
-  }
-}
-
-const removeFromWatchList = async (req, res) => {
-  try {
-    const removedItem = await User.findByIdAndUpdate(
-      req.body.id,
-      { $pull: { watchList: req.params.auctionId } },
-      { new: true }
-    )
-
-    res.status(200).send({ removedItem })
-  } catch (error) {
-    throw error
-  }
-}
-
-const getWatchList = async (req, res) => {
-  try {
-    const currentUser = await User.findById(req.body.id).populate('watchList')
-    res.status(200).send(currentUser.watchList)
-  } catch (error) {
-    throw error
-  }
-}
-
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find({})
@@ -128,13 +121,26 @@ const getAllUsers = async (req, res) => {
   }
 }
 
+const getTransactions = async (req, res) => {
+  try {
+    const transactions = await Transactions.find({
+      buyerId: res.locals.payload.id
+    })
+      .sort({
+        createdAt: -1
+      })
+      .populate(['itemId', 'sellerId', 'buyerId'])
+
+    res.status(200).send(transactions)
+  } catch (error) {
+    throw error
+  }
+}
 module.exports = {
   updatePassword,
   updateProfile,
   getMyProfileById,
   deleteMyProfile,
-  addToWatchList,
-  removeFromWatchList,
-  getWatchList,
-  getAllUsers
+  getAllUsers,
+  getTransactions
 }

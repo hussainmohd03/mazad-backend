@@ -9,12 +9,26 @@ router.post(
   controller.createAuction
 )
 
+router.post(
+  '/autobid',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.createAutoBidding
+)
+
 router.get(
   '/category',
   middleware.stripToken,
   middleware.verifyToken,
   controller.getAuctionByCategory
 )
+router.get(
+  '/categories',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getCategoryCount
+)
+
 router.get(
   '/:id',
   middleware.stripToken,

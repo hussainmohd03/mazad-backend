@@ -121,8 +121,24 @@ exports.getAuctionByCategory = async (req, res) => {
     const auctions = await Auction.find({ category: name })
       .sort({ createdAt: -1 })
       .populate('itemId')
-
     res.status(200).send(auctions)
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.getCategoryCount = async (req, res) => {
+  try {
+    const categoryCount = await Auction.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          totalQuantity: { $sum: 1 }
+        }
+      }
+    ])
+
+    res.status(200).send(categoryCount)
   } catch (error) {
     throw error
   }
@@ -175,6 +191,63 @@ exports.placeBidding = async (req, res) => {
                 userId: id,
                 amount: amount
               })
+              const findBid = await Bidding.findById(newBid._id).populate([
+                'userId',
+                'auctionId'
+              ])
+              console.log('current user', id)
+              // console.log('previous bidder', previousBid[0].userId)
+
+              if (
+                previousBid.length !== 0 &&
+                previousBid[0].userId.toString() !== id
+              ) {
+                let newNotfication = await User.findByIdAndUpdate(
+                  newBid.userId,
+                  {
+                    $push: {
+                      notifications: {
+                        message: `You've been outbid on auction #${findBid.auctionId._id.toString()}.`
+                      }
+                    }
+                  },
+                  { new: true }
+                )
+
+                newNotfication =
+                  newNotfication.notifications[
+                    newNotfication.notifications.length - 1
+                  ].message
+                // connect to frontend
+                global.io
+                  .to(previousBid[0].userId.toString())
+                  .emit('notify', newNotfication)
+                // console.log(newBid.userId._id)
+              } else {
+                let newNotfication = await User.findByIdAndUpdate(
+                  newBid.userId,
+                  {
+                    $push: {
+                      notifications: {
+                        message: `Bid placed successfully.`
+                      }
+                    }
+                  },
+                  { new: true }
+                )
+
+                newNotfication =
+                  newNotfication.notifications[
+                    newNotfication.notifications.length - 1
+                  ].message
+                // connect to frontend
+                console.log(newBid.userId._id.toString())
+                global.io
+                  .to(newBid.userId._id.toString())
+                  .emit('notify', newNotfication)
+                console.log('from job', newNotfication)
+                console.log(newBid.userId._id)
+              }
               const updatedAuction = await Auction.findByIdAndUpdate(
                 auctionId,
                 {
@@ -183,8 +256,10 @@ exports.placeBidding = async (req, res) => {
                 { new: true }
               )
 
+              // notif here for outbid
+
               // TODO 4: update user lockedAmount
-              user.lockedAmount += amount
+              user.lockedAmount += parseInt(amount)
               await user.save()
 
               const newBidCount = await Bidding.countDocuments({ auctionId })
@@ -214,3 +289,32 @@ exports.placeBidding = async (req, res) => {
   }
 }
 
+exports.createAutoBidding = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const { auctionId, increment_amount, max_bid_amount } = req.body
+
+    if (!auctionId || !increment_amount || !max_bid_amount) {
+      return res.status(400).send({ msg: 'Missing fields' })
+    }
+
+    // Prevent duplicate autobidding for same user/auction
+    const exists = await Autobidding.findOne({ auctionId, userId: id })
+    if (exists) {
+      return res
+        .status(409)
+        .send({ msg: 'Autobidding already set for this auction' })
+    }
+
+    const autobid = await Autobidding.create({
+      auctionId,
+      userId: id,
+      increment_amount,
+      max_bid_amount
+    })
+
+    return res.status(201).send(autobid)
+  } catch (error) {
+    throw error
+  }
+}
