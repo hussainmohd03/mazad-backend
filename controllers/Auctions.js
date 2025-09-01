@@ -121,7 +121,6 @@ exports.getAuctionByCategory = async (req, res) => {
     const auctions = await Auction.find({ category: name })
       .sort({ createdAt: -1 })
       .populate('itemId')
-
     res.status(200).send(auctions)
   } catch (error) {
     throw error
@@ -130,14 +129,20 @@ exports.getAuctionByCategory = async (req, res) => {
 
 exports.getCategoryCount = async (req, res) => {
   try {
-    const categoryCount = await Auction.find()
+    const categoryCount = await Auction.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          totalQuantity: { $sum: 1 }
+        }
+      }
+    ])
 
-    res.status(200).send()
+    res.status(200).send(categoryCount)
   } catch (error) {
     throw error
   }
 }
-
 
 exports.placeBidding = async (req, res) => {
   try {
@@ -313,4 +318,3 @@ exports.createAutoBidding = async (req, res) => {
     throw error
   }
 }
-

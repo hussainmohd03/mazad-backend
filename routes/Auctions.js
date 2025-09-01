@@ -23,6 +23,13 @@ router.get(
   controller.getAuctionByCategory
 )
 router.get(
+  '/categories',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getCategoryCount
+)
+
+router.get(
   '/:id',
   middleware.stripToken,
   middleware.verifyToken,
