@@ -3,7 +3,6 @@ const User = require('../models/user')
 const Bidding = require('../models/Bidding')
 
 const updateItemStatus = async (req, res) => {
-  console.log('hghag', req.body)
   try {
     if (req.query.action === 'approved') {
       const aprovedItems = await Item.findByIdAndUpdate(
