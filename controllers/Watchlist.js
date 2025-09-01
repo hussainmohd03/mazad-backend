@@ -1,4 +1,4 @@
-const watchList = require('../models/Watchlist')
+const watchList = require('../models/WatchList')
 
 // get approved items
 
