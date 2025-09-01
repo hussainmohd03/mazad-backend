@@ -5,7 +5,7 @@ const Auction = require('../models/auction')
 const nowUTC = () => new Date()
 
 const makeAutoBidding = async () => {
-  console.log('getting auctions')
+  
   const auctions = await Auction.find({ status: 'ongoing' })
   for (let i = 0; i < auctions.length; i++) {
     const highestBidder = await Bidding.find({ auctionId: auctions[i] }).sort({
@@ -18,8 +18,6 @@ const makeAutoBidding = async () => {
         $gte: highestBidder[0].amount + 20
       }
     }).sort({ max_bid_amount: -1 })
-
-    console.log('autobidders', autoBidders)
     const nextBid = Math.min(
       autoBidders[0].max_bid_amount,
       highestBidder[0].amount + autoBidders[0].increment_amount
@@ -29,13 +27,12 @@ const makeAutoBidding = async () => {
       highestBidder.length !== 0 &&
       highestBidder[0].userId !== autoBidders[0].userId
     ) {
-      console.log(highestBidder[0])
       const previousBidder = await User.findById(highestBidder[0].userId)
       if (previousBidder) {
         previousBidder.lockedAmount -= highestBidder[0].amount
         await previousBidder.save()
         let newNotfication = await User.findByIdAndUpdate(
-          newBidding.userId,
+          previousBidder.userId,
           {
             $push: {
               notifications: {
@@ -69,8 +66,7 @@ const makeAutoBidding = async () => {
             userId: autoBidders[0].userId,
             amount: highestBidder[0].amount + 20
           })
-          
-          console.log('new bidding', newBidding)
+
           let newNotfication = await User.findByIdAndUpdate(
             newBidding.userId,
             {
@@ -102,7 +98,6 @@ module.exports = makeAutoBidding
 // const placeAutoBidding = async () => {
 //   // getting all autobiddings from the table
 //   const autobiddings = await Autobidding.find()
-//   console.log('autobiddings', autobiddings)
 //   let bidding = '',
 //     amount = 0,
 //     max = 0,
@@ -111,7 +106,6 @@ module.exports = makeAutoBidding
 //     userDetails = 0,
 //     auction = ''
 //   for (let i = 0; i < autobiddings.length; i++) {
-//     console.log('entered for loop')
 //     bidding = await Bidding.find({ auctionId: autobiddings[i].auctionId }).sort(
 //       { amount: -1 }
 //     )
@@ -152,20 +146,17 @@ module.exports = makeAutoBidding
 // repeat
 
 // const checkAutoBidding = async (auctId, id, amount, step) => {
-//   console.log('enters function')
 //   let currentPrice = parseInt(amount)
 //   let highestBidder = id
 //   let nextBidder = ''
 //   let nextBid = 0
 
 //   while (true) {
-//     console.log('loop')
 //     const autoBidders = await Autobidding.find({
 //       auctionId: auctId,
 //       userId: { $ne: highestBidder },
 //       max_bid_amount: { $gte: currentPrice + step }
 //     }).sort({ max_bid_amount: -1 })
-//     console.log(autoBidders)
 
 //     if (autoBidders.length === 0) {
 //       break
@@ -187,6 +178,5 @@ module.exports = makeAutoBidding
 
 //     currentPrice = nextBid
 //     highestBidder = autoBidders[0].userId
-//     console.log('next bid placed', newBid)
 //   }
 // }
