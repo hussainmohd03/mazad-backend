@@ -150,7 +150,9 @@ exports.placeBidding = async (req, res) => {
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
+
     let newBid = {}
+
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -176,7 +178,6 @@ exports.placeBidding = async (req, res) => {
 
               // TODO 3: if there is and it's not the same user release lockedAmount
               if (previousBid.length !== 0 && previousBid[0].userId !== id) {
-                console.log(previousBid[0])
                 const previousBidder = await User.findById(
                   previousBid[0].userId
                 )
@@ -195,8 +196,6 @@ exports.placeBidding = async (req, res) => {
                 'userId',
                 'auctionId'
               ])
-              console.log('current user', id)
-              // console.log('previous bidder', previousBid[0].userId)
 
               if (
                 previousBid.length !== 0 &&
@@ -222,7 +221,28 @@ exports.placeBidding = async (req, res) => {
                 global.io
                   .to(previousBid[0].userId.toString())
                   .emit('notify', newNotfication)
-                // console.log(newBid.userId._id)
+              } else {
+                let newNotfication = await User.findByIdAndUpdate(
+                  newBid.userId,
+                  {
+                    $push: {
+                      notifications: {
+                        message: `Bid placed successfully.`
+                      }
+                    }
+                  },
+                  { new: true }
+                )
+
+                newNotfication =
+                  newNotfication.notifications[
+                    newNotfication.notifications.length - 1
+                  ].message
+                // connect to frontend
+                global.io
+                  .to(newBid.userId._id.toString())
+                  .emit('notify', newNotfication)
+
               }
               let newNotfication = await User.findByIdAndUpdate(
                 newBid.userId,

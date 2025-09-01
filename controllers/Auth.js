@@ -13,9 +13,7 @@ const Register = async (req, res) => {
     const lastName = full_name.substring(space_index, full_name.length)
 
     let passwordHash = await middleware.hashPassword(password)
-    console.log('before')
     let existingUserInDB = await User.findOne({ email })
-    console.log(existingUserInDB)
 
     if (existingUserInDB) {
       return res.status(400).send('a user with this email exists. try another.')
@@ -90,10 +88,8 @@ const getFinancialInfo = async (req, res) => {
 }
 
 const LoginAsAdmin = async (req, res) => {
-  console.log('joined login as admin')
   try {
     const { email, password } = req.body
-    console.log('email', email)
     const admin = await User.findOne({ email, type: 'admin' })
 
     if (!admin) {
@@ -112,9 +108,7 @@ const LoginAsAdmin = async (req, res) => {
       last_name: admin.lastName,
       type: admin.type
     }
-    console.log(payload)
     const token = await middleware.createToken({ payload })
-    console.log(token)
     res.status(200).send({ status: 'success', token, payload })
   } catch (error) {
     throw error
