@@ -6,7 +6,7 @@ const createItem = async (req, res) => {
   try {
     console.log(req.body)
     const ownerId = res.locals.payload.id
-    const images = req.files.map(file => file.path)
+    const images = req.files.map(file => file.savedPath)
     const createdItem = await Item.create({ ...req.body, ownerId, images })
     res.send(createdItem)
   } catch (error) {
