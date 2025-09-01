@@ -4,7 +4,6 @@ const middleware = require('../middleware')
 
 const createItem = async (req, res) => {
   try {
-    console.log(req.body)
     const ownerId = res.locals.payload.id
     const images = req.files.map((file) => file.savedPath)
     const createdItem = await Item.create({ ...req.body, ownerId, images })
@@ -50,7 +49,6 @@ const updateItem = async (req, res) => {
   try {
     const { id } = res.locals.payload
     const item = await Item.findById(req.params.id)
-    console.log('item', item._id)
     if (item.ownerId.toString() === id && item.status === 'pending') {
       const updatedItem = await Item.findByIdAndUpdate(item._id, req.body, {
         new: true

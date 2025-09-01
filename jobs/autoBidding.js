@@ -1,7 +1,10 @@
-const Autobidding = require('../models/Autobidding')
-const User = require('../models/user')
-const Bidding = require('../models/Bidding')
+const auction = require('../models/auction')
 const Auction = require('../models/auction')
+const Bidding = require('../models/Bidding')
+const Transaction = require('../models/Transaction')
+const User = require('../models/user')
+const Watchlist = require('../models/Watchlist')
+
 const nowUTC = () => new Date()
 
 const makeAutoBidding = async () => {

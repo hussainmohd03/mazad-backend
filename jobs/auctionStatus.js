@@ -14,12 +14,10 @@ const checkAuctions = async () => {
     status: 'upcoming',
     startDate: { $lte: nowUTC() }
   })
-
   for (let auction of upcoming) {
     auction.status = 'ongoing'
     await auction.save()
   }
-
   //TODO 3: get all ongoing auctions with endDate <= now and change their status to closed,
   const expired = await Auction.find({
     status: 'ongoing',
@@ -28,6 +26,7 @@ const checkAuctions = async () => {
 
   for (let auction of expired) {
     auction.status = 'closed'
+
     const watchlist = await Watchlist.find({ auctionId: auction._id }).populate(
       ['userId', 'auctionId']
     )
@@ -49,12 +48,9 @@ const checkAuctions = async () => {
         newNotfication =
           newNotfication.notifications[newNotfication.notifications.length - 1]
             .message
-        // console.log(watchlist[i].userId._id.toString())
         global.io
           .to(watchlist[i].userId._id.toString())
           .emit('notify', newNotfication)
-        console.log('from job', newNotfication)
-        // console.log(watchlist[i].userId._id)
 
         // update watchlist entity by removing the records with auctions that have been closed
         await Watchlist.findByIdAndDelete(watchlist[i]._id.toString())
@@ -68,8 +64,6 @@ const checkAuctions = async () => {
     // TODO 6:  user Balance
     if (highest_bid) {
       const highest_bidder = await User.findById(highest_bid.userId)
-      // console.log(highest_bidder)
-      // console.log(highest_bid.userId)
       // TODO 6.1: check user balance
       if (highest_bidder.balance >= auction.currentPrice) {
         // TODO 6.2 : if sufficient reduce balance
@@ -103,14 +97,12 @@ const checkAuctions = async () => {
         itemId: auction.itemId,
         date: nowUTC()
       })
-      console.log('trasnaction', trasnaction)
     }
   }
   // TODO 5: emit only ongoing auctions
   const ongoingAuctions = await Auction.find({ status: 'ongoing' }).populate(
     'itemId'
   )
-
   global.io.emit('updateAuctions', { ongoing: ongoingAuctions })
 }
 
