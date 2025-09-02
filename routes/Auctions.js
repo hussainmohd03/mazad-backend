@@ -2,6 +2,12 @@ const controller = require('../controllers/Auctions')
 const router = require('express').Router()
 const middleware = require('../middleware')
 
+router.get(
+  '/me/user',
+  middleware.stripToken,
+  middleware.verifyToken,
+  controller.getUsersBiddings
+)
 router.post(
   '',
   middleware.stripToken,

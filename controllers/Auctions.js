@@ -6,6 +6,7 @@ const { io } = require('../server')
 const User = require('../models/user')
 const nowUTC = () => new Date()
 const Autobidding = require('../models/Autobidding')
+const auction = require('../models/auction')
 
 // create auction logic
 exports.createAuction = async (req, res) => {
@@ -340,4 +341,26 @@ exports.getSellerAuctions = async (req, res) => {
   } catch (error) {
     throw error
   }
+}
+
+exports.getUsersBiddings = async (req, res) => {
+  const { id } = res.locals.payload
+  let items = []
+  console.log('user id', id)
+  const auctions = await Auction.find({ status: 'ongoing' })
+  auctions.forEach(async (auction) => {
+    const item = await Item.findById(auction.itemId)
+    items.push(item)
+  })
+  console.log('auctions', auctions)
+  let userBiddings = []
+  let bidding = ''
+  for (let i = 0; i < auctions.length; i++) {
+    bidding = await Bidding.find({
+      userId: id,
+      auctionId: auctions[i]._id
+    }).populate('auctionId')
+    userBiddings.push(bidding)
+  }
+  return res.status(201).send({ message: 'success', userBiddings, items })
 }
