@@ -90,6 +90,7 @@ const getFinancialInfo = async (req, res) => {
 const LoginAsAdmin = async (req, res) => {
   try {
     const { email, password } = req.body
+
     const admin = await User.findOne({ email, type: 'admin' })
 
     if (!admin) {
