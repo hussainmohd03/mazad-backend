@@ -1,11 +1,8 @@
 const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
-const User = require('../models/user')
 const Autobidding = require('../models/Autobidding')
 const User = require('../models/user')
-const Bidding = require('../models/Bidding')
-const Auction = require('../models/auction')
 
 const nowUTC = () => new Date()
 
@@ -34,7 +31,6 @@ const makeAutoBidding = async () => {
           highestBidder.length !== 0 &&
           highestBidder[0].userId !== autoBidders[0].userId
         ) {
-
           // console.log(highestBidder[0].userId.toString())
           // console.log('highest bidder', highestBidder[0])
           const previousBidder = await User.findById(
@@ -64,8 +60,6 @@ const makeAutoBidding = async () => {
                 newNotfication.notifications.length - 1
               ].message
 
-
-            console.log(previousBidder)
 
             global.io
               .to(previousBidder._id.toString())
