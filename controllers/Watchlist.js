@@ -1,5 +1,7 @@
-const watchList = require("../models/WatchList");
+
+const watchList = require("../models/Watchlist");
 const Item = require("../models/Item");
+
 // get approved items
 
 const addToWatchList = async (req, res) => {
