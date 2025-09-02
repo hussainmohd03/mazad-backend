@@ -47,12 +47,6 @@ io.on('connection', (socket) => {
     console.log(`bye bye ${userId}`)
   })
 
-  // new bid event
-  // socket.on('newBid', (data) => {
-  //   const { auctionId, userId, amount } = data
-  //   console.log(`New bid in auction ${auctionId}: User ${userId} bid ${amount}`)
-  // })
-
   // emit changes in autobidding to frontend
 
   socket.on('disconnect', () => {
@@ -62,7 +56,6 @@ io.on('connection', (socket) => {
 
 // db config
 const mongoose = require('./config/db')
-// mongoose()
 
 // set port config
 const port = process.env.PORT ? process.env.PORT : 3000
@@ -88,7 +81,7 @@ const itemsRT = require('./routes/items')
 const userRT = require('./routes/User')
 const AuthRT = require('./routes/Auth')
 const AdminRT = require('./routes/AdminPage')
-const WatchListRT = require('./routes/WatchList')
+const WatchListRT = require('./controllers/WatchList')
 // use routers
 app.use('/auctions', auctionRT)
 app.use('/items', itemsRT)

@@ -1,26 +1,26 @@
-const controller = require("../controllers/Watchlist");
-const router = require("express").Router();
-const middleware = require("../middleware/index");
+const controller = require('./WatchList')
+const router = require('express').Router()
+const middleware = require('../middleware/index')
 
 router.put(
-  "/me/add/:auctionId",
+  '/me/add/:auctionId',
   middleware.stripToken,
   middleware.verifyToken,
   controller.addToWatchList
-);
+)
 
 router.put(
-  "/me/remove/:auctionId",
+  '/me/remove/:auctionId',
   middleware.stripToken,
   middleware.verifyToken,
   controller.removeFromWatchList
-);
+)
 
 router.get(
-  "/me",
+  '/me',
   middleware.stripToken,
   middleware.verifyToken,
   controller.getWatchList
-);
+)
 
-module.exports = router;
+module.exports = router

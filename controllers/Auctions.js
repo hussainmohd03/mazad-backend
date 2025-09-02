@@ -259,12 +259,11 @@ exports.placeBidding = async (req, res) => {
                   newNotfication.notifications.length - 1
                 ].message;
               // connect to frontend
-              console.log(newBid.userId._id.toString());
+
               global.io
                 .to(newBid.userId._id.toString())
-                .emit("notify", newNotfication);
-              console.log("from job", newNotfication);
-              console.log(newBid.userId._id);
+                .emit('notify', newNotfication)
+
             }
             const updatedAuction = await Auction.findByIdAndUpdate(
               auctionId,
@@ -344,6 +343,7 @@ exports.getSellerAuctions = async (req, res) => {
 };
 
 exports.getUsersBiddings = async (req, res) => {
+
   const { id } = res.locals.payload;
   let response = await Auction.find({ status: "ongoing" })
     .populate("itemId")
