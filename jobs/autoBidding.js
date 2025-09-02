@@ -2,6 +2,7 @@ const Autobidding = require('../models/Autobidding')
 const User = require('../models/user')
 const Bidding = require('../models/Bidding')
 const Auction = require('../models/auction')
+
 const nowUTC = () => new Date()
 
 const makeAutoBidding = async () => {
@@ -29,6 +30,7 @@ const makeAutoBidding = async () => {
           highestBidder.length !== 0 &&
           highestBidder[0].userId !== autoBidders[0].userId
         ) {
+
           // console.log(highestBidder[0].userId.toString())
           // console.log('highest bidder', highestBidder[0])
           const previousBidder = await User.findById(
@@ -38,6 +40,7 @@ const makeAutoBidding = async () => {
           console.log('id of previous bidder', previousBidder._id)
           if (previousBidder) {
             console.log('inside second if ', previousBidder)
+
             previousBidder.lockedAmount -= highestBidder[0].amount
             await previousBidder.save()
             let newNotfication = await User.findByIdAndUpdate(
@@ -51,14 +54,15 @@ const makeAutoBidding = async () => {
               },
               { new: true }
             )
-            console.log('previous bidder id', previousBidder._id)
-            console.log('response from notifi', newNotfication)
+
             newNotfication =
               newNotfication.notifications[
                 newNotfication.notifications.length - 1
               ].message
 
+
             console.log(previousBidder)
+
             global.io
               .to(previousBidder._id.toString())
               .emit('notify', newNotfication)
@@ -95,7 +99,6 @@ const makeAutoBidding = async () => {
                 bidCount: newBidCount
               })
 
-              console.log('new bidding', newBidding)
               let newNotfication = await User.findByIdAndUpdate(
                 newBidding.userId,
                 {

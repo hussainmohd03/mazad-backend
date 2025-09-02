@@ -6,6 +6,7 @@ const { io } = require('../server')
 const User = require('../models/user')
 const nowUTC = () => new Date()
 const Autobidding = require('../models/Autobidding')
+const auction = require('../models/auction')
 
 // create auction logic
 exports.createAuction = async (req, res) => {
@@ -150,9 +151,7 @@ exports.placeBidding = async (req, res) => {
     const auctionId = req.params.id
     const { amount } = req.body
     const step = 20
-
     let newBid = {}
-
     if (!amount) {
       return res.send('invalid amount')
     } else {
@@ -242,7 +241,6 @@ exports.placeBidding = async (req, res) => {
                 global.io
                   .to(newBid.userId._id.toString())
                   .emit('notify', newNotfication)
-
               }
               let newNotfication = await User.findByIdAndUpdate(
                 newBid.userId,
@@ -261,12 +259,9 @@ exports.placeBidding = async (req, res) => {
                   newNotfication.notifications.length - 1
                 ].message
               // connect to frontend
-              console.log(newBid.userId._id.toString())
               global.io
                 .to(newBid.userId._id.toString())
                 .emit('notify', newNotfication)
-              console.log('from job', newNotfication)
-              console.log(newBid.userId._id)
             }
             const updatedAuction = await Auction.findByIdAndUpdate(
               auctionId,
@@ -275,7 +270,6 @@ exports.placeBidding = async (req, res) => {
               },
               { new: true }
             )
-            
             // TODO 4: update user lockedAmount
             user.lockedAmount += parseInt(amount)
             await user.save()
@@ -334,4 +328,34 @@ exports.createAutoBidding = async (req, res) => {
   } catch (error) {
     throw error
   }
+}
+
+exports.getSellerAuctions = async (req, res) => {
+  try {
+    const { id } = res.locals.payload
+    const items = await Auction.find({ ownerId: id }).populate('itemId')
+    return res.status(201).send({ message: 'success', items })
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.getUsersBiddings = async (req, res) => {
+  const { id } = res.locals.payload
+  let items = []
+  const auctions = await Auction.find({ status: 'ongoing' })
+  auctions.forEach(async (auction) => {
+    const item = await Item.findById(auction.itemId)
+    items.push(item)
+  })
+  let userBiddings = []
+  let bidding = ''
+  for (let i = 0; i < auctions.length; i++) {
+    bidding = await Bidding.find({
+      userId: id,
+      auctionId: auctions[i]._id
+    }).populate('auctionId')
+    userBiddings.push(bidding)
+  }
+  return res.status(201).send({ message: 'success', userBiddings, items })
 }

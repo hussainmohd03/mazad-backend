@@ -1,4 +1,4 @@
-const WatchList = require('../models/Watchlist')
+const WatchList = require('../models/Watchist')
 
 const addToWatchList = async (req, res) => {
   try {
@@ -15,7 +15,7 @@ const addToWatchList = async (req, res) => {
 
 const removeFromWatchList = async (req, res) => {
   try {
-    const removedItem = await WatchList.findOneAndDelete({
+    const removedItem = await watchList.findOneAndDelete({
       auctionId: req.params.auctionId,
       userId: res.locals.payload.id
     })
@@ -28,10 +28,11 @@ const removeFromWatchList = async (req, res) => {
 
 const getWatchList = async (req, res) => {
   try {
-    const usersWatchList = await WatchList.find({
-      userId: res.locals.payload.id
-    }).populate('auctionId')
-    console.log(usersWatchList)
+    const usersWatchList = await watchList
+      .find({
+        userId: res.locals.payload.id
+      })
+      .populate('auctionId')
     res.status(200).send(usersWatchList)
   } catch (error) {
     throw error
