@@ -362,3 +362,19 @@ exports.getUsersBiddings = async (req, res) => {
   response = response.filter((auction) => auction.inAuction === true);
   return res.status(201).send({ message: "success", response });
 };
+
+exports.getUserPurchases = async (req, res) => {
+  console.log("getUserPurchases");
+  try {
+    const { id } = res.locals.payload;
+    let purchases = await Auction.find({
+      winningBid: { $ne: null },
+    }).populate("itemId", "WinningBid");
+    purchases = purchases.filter(
+      (purchase) => purchase.winningBid.userId.toString() === id
+    );
+    return res.status(201).send({ purchases });
+  } catch (error) {
+    throw error;
+  }
+};
