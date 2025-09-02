@@ -1,3 +1,7 @@
+const Auction = require('../models/auction')
+const Bidding = require('../models/Bidding')
+const Transaction = require('../models/Transaction')
+const User = require('../models/user')
 const Autobidding = require('../models/Autobidding')
 const User = require('../models/user')
 const Bidding = require('../models/Bidding')

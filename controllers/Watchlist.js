@@ -1,4 +1,5 @@
 const watchList = require('../models/Watchlist')
+const Item = require('../models/Item')
 
 // get approved items
 
@@ -34,6 +35,13 @@ const getWatchList = async (req, res) => {
         userId: res.locals.payload.id
       })
       .populate('auctionId')
+      .lean()
+    for (const watchItem of usersWatchList) {
+      console.log(watchItem)
+      const item = await Item.findById(watchItem.auctionId.itemId.toString())
+      watchItem.itemDetails = item
+      console.log(watchItem)
+    }
     res.status(200).send(usersWatchList)
   } catch (error) {
     throw error
