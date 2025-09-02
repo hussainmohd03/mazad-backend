@@ -259,12 +259,9 @@ exports.placeBidding = async (req, res) => {
                   newNotfication.notifications.length - 1
                 ].message
               // connect to frontend
-              console.log(newBid.userId._id.toString())
               global.io
                 .to(newBid.userId._id.toString())
                 .emit('notify', newNotfication)
-              console.log('from job', newNotfication)
-              console.log(newBid.userId._id)
             }
             const updatedAuction = await Auction.findByIdAndUpdate(
               auctionId,
@@ -346,13 +343,11 @@ exports.getSellerAuctions = async (req, res) => {
 exports.getUsersBiddings = async (req, res) => {
   const { id } = res.locals.payload
   let items = []
-  console.log('user id', id)
   const auctions = await Auction.find({ status: 'ongoing' })
   auctions.forEach(async (auction) => {
     const item = await Item.findById(auction.itemId)
     items.push(item)
   })
-  console.log('auctions', auctions)
   let userBiddings = []
   let bidding = ''
   for (let i = 0; i < auctions.length; i++) {
