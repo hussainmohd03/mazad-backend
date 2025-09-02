@@ -16,7 +16,7 @@ const Register = async (req, res) => {
     let existingUserInDB = await User.findOne({ email })
 
     if (existingUserInDB) {
-      return res.status(400).send('a user with this email exists. try another.')
+      return res.status(400).send({msg : 'a user with this email exists. try another.'})
     } else {
       const user = await User.create({
         email,
