@@ -2,7 +2,6 @@ const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
 const User = require('../models/user')
-const Watchlist = require('../models/WatchList')
 const Autobidding = require('../models/Autobidding')
 const nowUTC = () => new Date()
 

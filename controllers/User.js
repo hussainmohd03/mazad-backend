@@ -62,7 +62,6 @@ const updateProfile = async (req, res) => {
     const updatedProfile = await User.findByIdAndUpdate(id, req.body, {
       new: true
     })
-    // here socket.emit
     let newNotification = await User.findByIdAndUpdate(
       id,
       {
