@@ -362,7 +362,7 @@ exports.getUsersBiddings = async (req, res) => {
   response = response.filter((auction) => auction.inAuction === true);
   return res.status(201).send({ message: "success", response });
 };
-
+//newly added
 exports.getUserPurchases = async (req, res) => {
   console.log("getUserPurchases");
   try {
