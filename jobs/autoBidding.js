@@ -1,8 +1,9 @@
 const Auction = require('../models/auction')
 const Bidding = require('../models/Bidding')
 const Transaction = require('../models/Transaction')
-const User = require('../models/user')
 const Autobidding = require('../models/Autobidding')
+const User = require('../models/user')
+
 const nowUTC = () => new Date()
 
 const makeAutoBidding = async () => {
@@ -30,10 +31,16 @@ const makeAutoBidding = async () => {
           highestBidder.length !== 0 &&
           highestBidder[0].userId !== autoBidders[0].userId
         ) {
+          // console.log(highestBidder[0].userId.toString())
+          // console.log('highest bidder', highestBidder[0])
           const previousBidder = await User.findById(
             highestBidder[0].userId.toString()
           )
+          console.log('previous bidder', previousBidder)
+          console.log('id of previous bidder', previousBidder._id)
           if (previousBidder) {
+            console.log('inside second if ', previousBidder)
+
             previousBidder.lockedAmount -= highestBidder[0].amount
             await previousBidder.save()
             let newNotfication = await User.findByIdAndUpdate(
@@ -47,10 +54,12 @@ const makeAutoBidding = async () => {
               },
               { new: true }
             )
+
             newNotfication =
               newNotfication.notifications[
                 newNotfication.notifications.length - 1
               ].message
+
 
             global.io
               .to(previousBidder._id.toString())
@@ -113,7 +122,99 @@ const makeAutoBidding = async () => {
         await user.save()
       }
     }
+    console.log('reached end of loop')
   }
 }
 
 module.exports = makeAutoBidding
+// const placeAutoBidding = async () => {
+//   // getting all autobiddings from the table
+//   const autobiddings = await Autobidding.find()
+//   console.log('autobiddings', autobiddings)
+//   let bidding = '',
+//     amount = 0,
+//     max = 0,
+//     increment_amount = 0,
+//     user = '',
+//     userDetails = 0,
+//     auction = ''
+//   for (let i = 0; i < autobiddings.length; i++) {
+//     console.log('entered for loop')
+//     bidding = await Bidding.find({ auctionId: autobiddings[i].auctionId }).sort(
+//       { amount: -1 }
+//     )
+//     amount = bidding[0].amount
+//     max = autobiddings[i].max_bid_amount
+//     increment_amount = autobiddings[i].increment_amount
+//     user = bidding[0].userId
+//     userDetails = await User.findById(user)
+//     auction = await Auction.findById(bidding[0].auctionId)
+//     if (auction.status === 'ongoing') {
+//       if (
+//         userDetails.balance >
+//         userDetails.lockedAmount + amount + increment_amount
+//       ) {
+//         const sd = new Date(auction.startDate)
+//         const ed = new Date(auction.endDate)
+//         if (sd <= nowUTC() < ed) {
+//           const newBidding = await Bidding.create({
+//             auctionId: autobiddings[i].auctionId,
+//             userId: user,
+//             amount: amount + increment_amount
+//           })
+//         }
+//       }
+//     }
+//   }
+// }
+
+// module.exports = placeAutoBidding
+
+// if auto-bidding is checked enable websocket
+// listen for biddings placed on the same auction
+// when another bidding is placed check if amount is greater than maximum bid + increment
+// if amount is less than maximum bid plus increment
+//  check if remaining balance is greater than maximum bid plus increment
+// check if time is not over
+// place bid at past maximum bit plus increment
+// repeat
+
+// const checkAutoBidding = async (auctId, id, amount, step) => {
+//   console.log('enters function')
+//   let currentPrice = parseInt(amount)
+//   let highestBidder = id
+//   let nextBidder = ''
+//   let nextBid = 0
+
+//   while (true) {
+//     console.log('loop')
+//     const autoBidders = await Autobidding.find({
+//       auctionId: auctId,
+//       userId: { $ne: highestBidder },
+//       max_bid_amount: { $gte: currentPrice + step }
+//     }).sort({ max_bid_amount: -1 })
+//     console.log(autoBidders)
+
+//     if (autoBidders.length === 0) {
+//       break
+//     }
+
+//     nextBidder = autoBidders[0]
+//     nextBid = Math.min(
+//       autoBidders[0].max_bid_amount,
+//       currentPrice + autoBidders[0].increment_amount
+//     )
+
+//     // will add to lockedAmount the bid that was placed rn
+
+//     const newBid = await Bidding.create({
+//       auctionId: auctId,
+//       userId: autoBidders[0].userId,
+//       amount: nextBid
+//     })
+
+//     currentPrice = nextBid
+//     highestBidder = autoBidders[0].userId
+//     console.log('next bid placed', newBid)
+//   }
+// }

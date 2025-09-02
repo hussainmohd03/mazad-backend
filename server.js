@@ -81,7 +81,7 @@ const itemsRT = require('./routes/items')
 const userRT = require('./routes/User')
 const AuthRT = require('./routes/Auth')
 const AdminRT = require('./routes/AdminPage')
-const WatchListRT = require('./controllers/WatchList')
+const WatchListRT = require('./routes/Watchlist')
 // use routers
 app.use('/auctions', auctionRT)
 app.use('/items', itemsRT)

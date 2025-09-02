@@ -1,4 +1,4 @@
-const controller = require('./WatchList')
+const controller = require('../controllers/Watchlist')
 const router = require('express').Router()
 const middleware = require('../middleware/index')
 
