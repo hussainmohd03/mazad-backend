@@ -1,5 +1,7 @@
 const watchList = require('../models/Watchlist')
 
+// get approved items
+
 const addToWatchList = async (req, res) => {
   try {
     const addedWatchList = await watchList.create({
