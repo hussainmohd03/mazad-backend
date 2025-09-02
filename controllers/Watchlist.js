@@ -1,9 +1,10 @@
-const WatchList = require('../models/Watchist')
+const watchList = require('../models/Watchlist')
+
+// get approved items
 
 const addToWatchList = async (req, res) => {
   try {
-    console.log('something')
-    const addedWatchList = await WatchList.create({
+    const addedWatchList = await watchList.create({
       auctionId: req.params.auctionId,
       userId: res.locals.payload.id
     })
