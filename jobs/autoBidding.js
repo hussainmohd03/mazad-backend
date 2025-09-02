@@ -5,7 +5,6 @@ const Auction = require('../models/auction')
 const nowUTC = () => new Date()
 
 const makeAutoBidding = async () => {
-  
   const auctions = await Auction.find({ status: 'ongoing' })
   for (let i = 0; i < auctions.length; i++) {
     const highestBidder = await Bidding.find({ auctionId: auctions[i] }).sort({
