@@ -104,6 +104,6 @@ cron.schedule('30 * * * * *', () => {
 })
 // listener
 // io.listen(5045)
-io.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
