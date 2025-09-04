@@ -37,10 +37,8 @@ const getWatchList = async (req, res) => {
       .populate('auctionId')
       .lean()
     for (const watchItem of usersWatchList) {
-      console.log(watchItem)
       const item = await Item.findById(watchItem.auctionId.itemId.toString())
       watchItem.itemDetails = item
-      console.log(watchItem)
     }
     res.status(200).send(usersWatchList)
   } catch (error) {
