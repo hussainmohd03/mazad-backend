@@ -364,7 +364,6 @@ exports.getUsersBiddings = async (req, res) => {
 }
 //newly added
 exports.getUserPurchases = async (req, res) => {
-  console.log('getUserPurchases')
   try {
     const { id } = res.locals.payload
     let purchases = await Auction.find({
