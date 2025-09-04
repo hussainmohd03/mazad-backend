@@ -38,9 +38,7 @@ const deleteItem = async (req, res) => {
 const getSellerItems = async (req, res) => {
   try {
     const { id } = res.locals.payload
-    let items = await Item.find({ ownerId: id }).lean()
-    items = items.filter((item) => item.status != 'listed')
-    console.log(items)
+    let items = await Item.find({ ownerId: id })
     res.send({ msg: 'successful', items: items })
   } catch (error) {
     throw error
