@@ -103,7 +103,7 @@ cron.schedule('30 * * * * *', () => {
   makeAutoBidding()
 })
 // listener
-io.listen(5045)
-app.listen(port, () => {
+// io.listen(5045)
+server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
