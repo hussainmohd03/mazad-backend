@@ -12,6 +12,7 @@ const makeAutoBidding = async () => {
     const highestBidder = await Bidding.find({ auctionId: auctions[i] }).sort({
       createdAt: -1
     })
+    if (highestBidder.length !== 0) {
       const autoBidders = await Autobidding.find({
         auctionId: auctions[i]._id,
         userId: { $ne: highestBidder[0].userId },
@@ -120,7 +121,7 @@ const makeAutoBidding = async () => {
         user.lockedAmount += nextBid
         await user.save()
       }
-    
+    }
     console.log('reached end of loop')
   }
 }
