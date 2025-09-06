@@ -362,7 +362,8 @@ exports.getUsersBiddings = async (req, res) => {
   response = response.filter((auction) => auction.inAuction === true)
   return res.status(201).send({ message: 'success', response })
 }
-//newly added
+
+
 exports.getUserPurchases = async (req, res) => {
   try {
     const { id } = res.locals.payload
@@ -377,3 +378,4 @@ exports.getUserPurchases = async (req, res) => {
     throw error
   }
 }
+

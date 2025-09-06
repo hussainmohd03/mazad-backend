@@ -6,6 +6,7 @@ const User = require('../models/user')
 
 const nowUTC = () => new Date()
 
+// MY FAVORITE PIECE OF CODE 
 const makeAutoBidding = async () => {
   const auctions = await Auction.find({ status: 'ongoing' })
   for (let i = 0; i < auctions.length; i++) {
@@ -54,7 +55,6 @@ const makeAutoBidding = async () => {
               newNotfication.notifications[
                 newNotfication.notifications.length - 1
               ].message
-
             global.io
               .to(previousBidder._id.toString())
               .emit('notify', newNotfication)

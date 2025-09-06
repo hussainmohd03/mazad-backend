@@ -18,7 +18,7 @@ const Register = async (req, res) => {
     if (existingUserInDB) {
       return res
         .status(400)
-        .send({ msg: 'a user with this email exists. try another.' })
+        .send({ msg: 'A user with this email exists. Try another.' })
     } else {
       const user = await User.create({
         email,
@@ -52,9 +52,11 @@ const Login = async (req, res) => {
         }
         let token = middleware.createToken(payload)
         return res.status(200).send({ user: payload, token })
+      } else {
+        return res.status(400).send({ msg: 'Password invalid.' })
       }
     } else {
-      return res.status(400).send('no user exists with that email.')
+      return res.status(400).send({ msg: 'No user exists with that email.' })
     }
   } catch (error) {
     throw error
